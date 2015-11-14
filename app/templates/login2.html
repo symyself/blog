@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}enjoy01 - Login{% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+<h1>Welcome Login</h1>
+<form method=post action="{{ url_for('login') }}"  style="width:220px;float:left;margin:0px auto;">
+      {{ wtf.quick_form(form) }}
+
+      <!-- <input class="btn btn-default" id="submit" name="submit" type="submit" value="Login"> -->
+ </form>
+
+</div>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<img src="{{ url_for('identify') }}" alt="img error" onclick="this.src=this.src+'?'+Math.random();"/>
+
+{% endblock %}

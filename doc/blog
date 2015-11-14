@@ -1,0 +1,62 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:	  uwsgi first_flask
+# Required-Start:    $local_fs $remote_fs $network $syslog $named
+# Required-Stop:     $local_fs $remote_fs $network $syslog $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: starts the nginx web server
+# Description:       starts nginx using start-stop-daemon
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+BIN=/usr/local/bin/uwsgi
+PROJECT_NAME=blog
+DESC='uwsgi blog'
+cfg_file=/home/songy/helloworld/python/blog/blog.ini
+pid_file=/var/run/uwsgi/${PROJECT_NAME}.pid
+sock_file=/var/run/uwsgi/${PROJECT_NAME}.sock
+user=www-data
+
+
+do_start()
+{
+	[ -d /var/run/uwsgi ] || mkdir -p /var/run/uwsgi	
+	chown $user:$user /var/run/uwsgi
+	${BIN} ${cfg_file}	
+}
+
+do_stop()
+{
+	${BIN} --stop ${pid_file}
+}
+
+do_reload() {
+	${BIN} --reload ${pid_file}
+}
+
+
+case "$1" in
+	start)
+		do_start
+		;;
+	stop)
+		do_stop
+		;;
+	reload)
+		do_reload
+		;;
+	restart)
+		do_stop
+		do_start
+		;;
+	status)
+		ps -ef | grep ${PROJECT_NAME}
+		;;
+	*)
+		echo "Usage: $BIN {start|stop|restart}" >&2
+		exit 3
+		;;
+esac
+

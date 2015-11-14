@@ -1,0 +1,43 @@
+server
+{
+    #listen 6666;
+    #listen 1024;
+    listen 6666;
+	#    root /soft/myself/helloworld/php;
+	root /home/songy/web;
+	index index.html index.php index.htm;
+	location ~ \.php$ {
+		#fastcgi_pass   127.0.0.1:9000;
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		fastcgi_index  index.php;
+		fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+		include        fastcgi_params;
+	}
+	###location = /first_flask { rewrite ^ /first_flask/; }
+	###location /first_flask { try_files $uri @first_flask; }
+	###location @first_flask {
+	###	include uwsgi_params;
+	###	uwsgi_param SCRIPT_NAME /first_flask;
+	###	uwsgi_modifier1 30;
+	###	uwsgi_pass unix:/var/run/uwsgi/first_flask.sock;
+	###	#uwsgi_pass 127.0.0.1:3031;
+	###}
+	location = /one { rewrite ^ /one/; }
+	location /one { try_files $uri @one; }
+	location @one {
+		include uwsgi_params;
+		uwsgi_param SCRIPT_NAME /one;
+		uwsgi_modifier1 30;
+		uwsgi_pass unix:/var/run/uwsgi/first_flask.sock;
+		#uwsgi_pass 127.0.0.1:3031;
+	}
+	location = /blog { rewrite ^ /blog/; }
+	location /blog { try_files $uri @blog; }
+	location @blog {
+		include uwsgi_params;
+		uwsgi_param SCRIPT_NAME /blog;
+		uwsgi_modifier1 30;
+		uwsgi_pass unix:/var/run/uwsgi/blog.sock;
+		#uwsgi_pass 127.0.0.1:3031;
+	}
+}

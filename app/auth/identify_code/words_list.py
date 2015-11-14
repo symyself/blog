@@ -1,0 +1,15 @@
+# encoding: utf-8
+all=['Python',
+'Django',
+'linux',
+'mysql',
+'html',
+'xml',
+'sql',
+'flask',
+'hadoop',
+'redis',
+'ftp',
+'hive',
+'celery',
+]
