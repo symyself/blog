@@ -12,11 +12,11 @@ class user(db.Model):
     email   = db.Column(db.String(32))
     register_date = db.Column(db.DateTime)
 
-    ##def __init__(self,username,password,email):
-    ##    self.username = username
-    ##    self.password = password
-    ##    self.email  = email
-    ##    self.register_date = datetime.now()
+    def __init__(self,username,password,email):
+        self.username = username
+        self.password = password
+        self.email  = email
+        self.register_date = datetime.now()
 
     def __repr__(self):
         return '<%s %r>' %(self.username,self.register_date)

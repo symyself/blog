@@ -20,15 +20,15 @@
                      </ul>
 					 {% if session['login'] == True %}
 							 <ul class="nav navbar-nav pull-right">
-							 <li><a href="{{ url_for('auth.index') }}">LogOut</a></li>
+							 <li><a href="{{ url_for('auth.logout') }}">LogOut</a></li>
 							 </ul>
 					 {% else %}
 							 <ul class="nav navbar-nav pull-right">
-							 <li><a href="{{ url_for('auth.index') }}">LogIn</a></li>
+							 <li><a href="{{ url_for('auth.login') }}">LogIn</a></li>
 							 </ul>
 
 							 <ul class="nav navbar-nav pull-right">
-							 <li><a href="{{ url_for('auth.index') }}">Register</a></li>
+							 <li><a href="{{ url_for('auth.register') }}">Register</a></li>
 							 </ul>
 					 {% endif %}
                  </div>

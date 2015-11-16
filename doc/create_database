@@ -1,0 +1,3 @@
+(venv) $ ipython manage.py shell
+>>> from manage import db
+>>> db.create_all()

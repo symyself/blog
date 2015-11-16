@@ -1,0 +1,2 @@
+yum install libjpeg libpng libjpeg-devel freetype-devel libpng-devel
+pip install pillow
