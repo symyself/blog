@@ -1,5 +1,5 @@
 # coding: utf-8
-from flask import request, render_template,session
+from flask import request, render_template,session,g
 from flask import make_response
 from flask import redirect
 from flask import abort, flash, url_for
@@ -9,12 +9,37 @@ from .. import db
 from . import auth
 
 @auth.route('/')
-def index():
+def base():
     return render_template( 'base.html' )
 
-@auth.route('/test')
-def test():
-    return 'test ok'
+def password_right( login_user):
+    if not login_user.verify_password(request.form.get('password')):
+        g.error_msg = u'密码错误'
+        return False
+    else:
+        return True
+
+
+def verify_code_right():
+    user_code = request.form.get('verify_code')
+    system_code = session['answer']
+    if user_code == system_code:
+        return True
+    else:
+        g.error_msg = u'验证码错误'
+        return False
+
+def login_check():
+    login_user=user.query.filter_by( username=request.form.get('username')).first()
+    if not login_user:
+        g.error_msg=u'用户不存在'
+        return False
+    if password_right( login_user) and verify_code_right():
+        session['username'] = login_user.username
+        session['login'] = True
+        return True
+    else:
+        return False
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -28,11 +53,7 @@ def login():
         return render_template("login2.html", form=login_form)
     elif login_form.validate():
         #login_result = user_login.login_check()
-        '''
-        sy=user.query.filter_by( username='songy').first()
-        sy.verify_password('songy')
-        '''
-        login_result = True
+        login_result = login_check()
         try:
             return render_template("welcome.html", password_right=login_result)
         except Exception , e:
@@ -50,7 +71,8 @@ def logout():
     '''
     print '-------------------logout'
     session['login'] = False
-    return redirect(url_for('home'))
+    session.pop('username',None)
+    return redirect(url_for('auth.base'))
     #return render_template("base.html")
 
 

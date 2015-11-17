@@ -23,7 +23,7 @@ def create_app(config_name):
     # 注册蓝本
     from .auth import auth as auth_blueprint
     app.register_blueprint( auth_blueprint,url_prefix='/auth' )
-    
+
     return app
 
 if __name__ == '__main__':
