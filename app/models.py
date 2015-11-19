@@ -11,6 +11,7 @@ class user(db.Model):
     password_hash = db.Column(db.String(128))
     email   = db.Column(db.String(32))
     register_date = db.Column(db.DateTime)
+    last_login_date = db.Column(db.DateTime)
 
     def __init__(self,username,password,email):
         self.username = username
