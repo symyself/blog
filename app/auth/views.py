@@ -5,6 +5,7 @@ from flask import redirect
 from flask import abort, flash, url_for
 from ..my_forms import user_forms
 from ..models import user
+from ..email import send_email
 from .. import db
 from . import auth
 
@@ -84,7 +85,7 @@ def register():
     reg_form = user_forms.register_form(request.form)
     if request.method == 'POST' and reg_form.validate():
         flash('thanks for registering')
-        print 'register:%s %s %s' %(request.form.get('username'),request.form.get('password'),request.form.get('email'))
+        #print 'register:%s %s %s' %(request.form.get('username'),request.form.get('password'),request.form.get('email'))
         try:
             new_user = user(request.form.get('username'),
                     request.form.get('password'),
@@ -94,6 +95,9 @@ def register():
         except Exception ,e:
             print e
             return 'register error!!!'
+        send_email(new_user.email, 'Confirm Your Account',
+                               'auth/email/confirm', user=new_user)
+        flash('A new confirmation email has been sent to you by email.')
         return redirect(url_for('auth.login'))
     else:
         return render_template('register2.html', form=reg_form)

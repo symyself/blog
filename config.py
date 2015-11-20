@@ -2,9 +2,9 @@ import os
 basedir = os.path.abspath( os.path.dirname( __file__ ))
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'super secret key'
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dsf,.ddsuper secret key'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
-    MAIL_SUBJECT_PREFIX = '[enjoy01]'
+    MAIL_SUBJECT_PREFIX = '[songy blog]'
     MAIL_SENDER         = 'Admin <symyself@163.com>'
     ADMIN               = os.environ.get('FLASK_ADMIN') or 'songy'
     @staticmethod
@@ -14,10 +14,13 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     MAIL_SERVER = 'smtp.163.com'
-    MAIL_PORT = 587
-    MAIL_USE_TLS = True
-    MAIL_USERNAME = 'symyself@163.com'
-    MAIL_PASSWROD = 'MYPASSWROD'
+    MAIL_PORT = 465
+    MAIL_USE_TLS = False
+    MAIL_USE_SSL = True
+    ##MAIL_USERNAME = os.getenv.get('MAIL_USERNAME')
+    ##MAIL_PASSWROD = os.getenv.get('MAIL_PASSWROD')
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     SQLALCHEMY_DATABASE_URI = 'mysql://flask:flask@127.0.0.1/flask'
 
 class TestingConfig(Config):

@@ -1,0 +1,2 @@
+Dear {{ user.username }}
+Welcome to <b>songy's blog
