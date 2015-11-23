@@ -22,13 +22,16 @@ class DevelopmentConfig(Config):
     MAIL_USERNAME = os.getenv('MAIL_USERNAME')
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     SQLALCHEMY_DATABASE_URI = 'mysql://flask:flask@127.0.0.1/flask'
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'mysql://flask:flask@127.0.0.1/flask'
+    SQLALCHEMY_DATABASE_URI = 'mysql://flask:flask@127.0.0.1/flask_test'
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 class ProductionConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'mysql://flask:flask@127.0.0.1/flask'
+    SQLALCHEMY_DATABASE_URI = 'mysql://flask:flask@127.0.0.1/flask_pro'
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
 config = {

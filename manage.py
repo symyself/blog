@@ -28,6 +28,23 @@ init 子命令创建迁移仓库:
 '''
 manager.add_command('db',MigrateCommand)
 
+
+@manager.command
+def test():
+    '''
+    Run the unit test
+    manager.command 修饰器让自定义命令变得简单。修饰函数名就是命令名，函数的文档字符
+    串会显示在帮助消息中。 test() 函数的定义体中调用了 unittest 包提供的测试运行函数。
+    单元测试可使用下面的命令运行：
+    (venv) $ python manage.py test
+    '''
+    import unittest
+    #tests   = unittest.TestLoader.discover( 'tests' )
+    #unittest.TextTestRunner.run( tests )
+    tests   = unittest.TestLoader().discover( 'tests' )
+    unittest.TextTestRunner(verbosity=2).run( tests )
+
+
 if __name__ == '__main__':
     manager.run()
     #manager.run(host='0.0.0.0',port=6666,debug=True)
