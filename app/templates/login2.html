@@ -6,12 +6,7 @@
 {% block page_content %}
 <div class="page-header">
 <h1>Welcome Login</h1>
-<form method=post action="{{ url_for('auth.login') }}"  style="width:220px;float:left;margin:0px auto;">
-      {{ wtf.quick_form(form) }}
-
-      <!-- <input class="btn btn-default" id="submit" name="submit" type="submit" value="Login"> -->
- </form>
-
+{{ wtf.quick_form(form) }}
 </div>
 <br/>
 <br/>

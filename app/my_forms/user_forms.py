@@ -29,4 +29,5 @@ class login_form(Form):
     username = StringField('Username', [validators.data_required('enter your name'), validators.Length(min=4, max=25)])
     password = PasswordField('Password', [validators.data_required('enter your password')])
     verify_code = StringField('Verify Dode', [validators.data_required('enter verify code')])
+    remember_me = BooleanField('Remember Me')
     submit = SubmitField('Login')

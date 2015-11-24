@@ -7,11 +7,23 @@ from flask import abort, flash, url_for
 from flask.ext.bootstrap import Bootstrap
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.mail import Mail
+from flask.ext.login import LoginManager
 from config import config
 
 bootstrap = Bootstrap()
 db = SQLAlchemy()
 mail=Mail()
+
+'''
+LoginManager 对象的 session_protection 属性可以设为 None、 'basic' 或 'strong' ，以提
+供不同的安全等级防止用户会话遭篡改。 设为 'strong' 时， Flask-Login 会记录客户端 IP
+地址和浏览器的用户代理信息， 如果发现异动就登出用户。 login_view 属性设置登录页面
+的端点。回忆一下，登录路由在蓝本中定义，因此要在前面加上蓝本的名字。
+'''
+login_manager = LoginManager()
+login_manager.session_protection = 'strong'
+login_manager.login_view = 'auth.login'
+
 
 def create_app(config_name):
     app=Flask(__name__)
@@ -21,6 +33,7 @@ def create_app(config_name):
     bootstrap.init_app(app)
     db.init_app(app)
     mail.init_app(app)
+    login_manager.init_app( app )
 
     # 附加路由和自定义的错误页面 (???)
     # 注册蓝本

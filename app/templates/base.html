@@ -18,12 +18,12 @@
                      <ul class="nav navbar-nav">
                      <li><a href="{{ url_for('main.base') }}">Home</a></li>
                      </ul>
-					 {% if session['login'] == True %}
+					 {% if current_user.is_authenticated %}
 							 <ul class="nav navbar-nav pull-right">
 							 <li><a href="{{ url_for('auth.logout') }}">LogOut</a></li>
 							 </ul>
 							 <ul class="nav navbar-nav pull-right">
-                                 <li><a>{{ session['username'] }}</a></li>
+                                 <li><a>{{ current_user.username }}</a></li>
 							 </ul>
 					 {% else %}
 							 <ul class="nav navbar-nav pull-right">
