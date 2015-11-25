@@ -14,6 +14,6 @@ def identify():
     if 'answer' in session:
         print 'old answer:%s' %session['answer']
         session.pop('answer',None)
-    ca = image.verify_img(request, 150, 30)
+    ca = image.verify_img(request, 150, 34)
     print 'set verify code answer:%s' %session['answer']
     return ca.display()

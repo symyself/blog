@@ -4,17 +4,29 @@
 {% block title %}enjoy01 - Login{% endblock %}
 
 {% block page_content %}
-<div class="page-header">
-<h1>Welcome Login</h1>
-{{ wtf.quick_form(form) }}
+<div class="page-header" style="width:300px;float:left;margin:0px auto;" >
+    <h2>Welcome Login</h2>
+
+<form action="" method="post"  class="form" role="form">
+    <div style="display:none;">
+    {{ form.csrf_token }}
+    </div>
+    <div class="form-group  required"><label class="control-label" for="username">Username</label>
+        <input class="form-control" id="username" name="username" required type="text" value="">
+    </div>
+    <div class="form-group  required"><label class="control-label" for="password">Password</label>
+        <input class="form-control" id="password" name="password" required type="password" value="">
+    </div>
+    <div class="form-group  required"><label class="control-label" for="verify_code">Verify Dode</label>
+        <input class="form-control" style="width:50%" id="verify_code" name="verify_code" required type="text" value="">
+        <img src="{{ url_for('auth.identify') }}" style="position:relative;left:150px;top:-34px;" alt="img error" onclick="this.src='{{ url_for('auth.identify') }}'+'?'+Math.random();"/>
+    </div>
+    <div class="checkbox">
+        <label><input id="remember_me" name="remember_me" type="checkbox" value="y"> Remember Me</label>
+        <input class="btn btn-default" id="submit" style="position:relative;left:120px;background-color:green;" name="submit" type="submit" value="Login">
+    </div>
+</form>
+
 </div>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<img src="{{ url_for('auth.identify') }}" alt="img error" onclick="this.src=this.src+'?'+Math.random();"/>
 
 {% endblock %}
