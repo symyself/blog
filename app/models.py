@@ -9,18 +9,18 @@ class Role( db.Model ):
     __tablename__ = 'blog_role'
     id = db.Column( db.Integer ,primary_key=True)
     rolename = db.Column ( db.String(32),unique=True )
-    users = db.relationship('user',backref='role',lazy='dynamic')
+    users = db.relationship('User',backref='role',lazy='dynamic')
 
     def __repr__(self):
         return '<Role %r>'%self.rolename
 
-class user(UserMixin,db.Model):
+class User(UserMixin,db.Model):
     #__tablename__ = app.config['TABLE_PREFIX']+'user'
     __tablename__ = 'blog_user'
     id = db.Column(db.Integer,primary_key=True)
     username = db.Column(db.String(64),unique=True,index=True)
     password_hash = db.Column(db.String(128))
-    email   = db.Column(db.String(32))
+    email   = db.Column(db.String(32),unique=True)
     role_id = db.Column( db.Integer , db.ForeignKey( 'blog_role.id'))
 
     register_date = db.Column(db.DateTime)
@@ -53,4 +53,4 @@ Flask-Login 要求程序实现一个回调函数，使用指定的标识符加�
 '''
 @login_manager.user_loader
 def load_user( user_id):
-    return user.query.get( int( user_id) )
+    return User.query.get( int( user_id) )

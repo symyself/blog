@@ -5,7 +5,7 @@ from flask import redirect
 from flask import abort, flash, url_for
 from flask.ext.login import login_required,logout_user,login_user
 from ..my_forms import user_forms
-from ..models import user
+from ..models import User as user
 from ..email import send_email
 from .. import db
 from . import auth
@@ -32,11 +32,14 @@ def verify_code_right():
         return False
 
 def login_check():
+    if not verify_code_right():
+        return False
+
     user_for_login=user.query.filter_by( username=request.form.get('username')).first()
     if not user_for_login:
         g.error_msg=u'用户不存在'
         return False
-    if password_right( user_for_login) and verify_code_right():
+    if password_right( user_for_login) :
         ##session['username'] = user_for_login.username
         ##session['login'] = True
         '''
@@ -98,8 +101,10 @@ def register():
     '''
     register
     '''
-    reg_form = user_forms.register_form(request.form)
-    if request.method == 'POST' and reg_form.validate():
+    ##reg_form = user_forms.register_form(request.form)
+    ##if request.method == 'POST' and reg_form.validate():
+    reg_form = user_forms.register_form()
+    if reg_form.validate_on_submit():
         flash('thanks for registering')
         #print 'register:%s %s %s' %(request.form.get('username'),request.form.get('password'),request.form.get('email'))
         try:

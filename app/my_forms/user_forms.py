@@ -1,6 +1,10 @@
 # encoding: utf-8
 from flask.ext.wtf import Form
-from wtforms import BooleanField, PasswordField, validators, StringField, SubmitField
+from wtforms import BooleanField, PasswordField, StringField, SubmitField
+from wtforms.validators import Required,DataRequired,Length,Email,Regexp,EqualTo
+from wtforms import ValidationError
+from ..models import User
+
 '''
 from wtforms import Form, BooleanField, TextField, PasswordField, validators, StringField, SubmitField
 
@@ -15,19 +19,43 @@ class register_form(Form):
 '''
 
 class register_form(Form):
-    username = StringField('Username', [validators.Length(min=4, max=25)])
-    email = StringField('email', [validators.Length(min=6, max=35)])
-    password = PasswordField('password', [
-        validators.data_required('enter your password'), validators.EqualTo('confirm', message='password must match')
-    ])
-    confirm = PasswordField('Repeat Password')
-    accept_tos = BooleanField('I accept the TOS', [validators.required()])
+    username = StringField('Username',
+            validators=[
+                    Required() ,
+                    Length(5,32,'至少5字符'),
+                    Regexp('^[A-Za-z][A-Za-z0-9_.]*$',0,u'字符(开头)，数字，下划线！')])
+    email = StringField('email', validators=[Required(),Length(4,32,u'密码太短了！'),Email()])
+    password = PasswordField('password',
+                validators=[Required(),Length(4,16,u'密码太短!'), EqualTo('confirm', message=u'两次密码不一致')])
+    confirm = PasswordField('Repeat Password',validators=[Required()])
+    ##accept_tos = BooleanField('I accept the TOS')
     submit = SubmitField('Register')
 
 
+    '''
+    这个表单还有两个自定义的验证函数， 以方法的形式实现。如果表单类中定义了以
+    validate_ 开头且后面跟着字段名的方法，这个方法就和常规的验证函数一起调用。本例
+    分别为 email 和 username 字段定义了验证函数，确保填写的值在数据库中没出现过。自定
+    义的验证函数要想表示验证失败，可以抛出 ValidationError 异常，其参数就是错误消息。
+    '''
+    def validate_username(self,field):
+        if User.query.filter_by(username=field.data).first():
+            raise ValidationError(str(field.data)+'\n already registerd')
+
+    def validate_email(self,field):
+        if User.query.filter_by( email=field.data).first():
+            raise ValidationError( str( field.data ) + '\n already registerd')
+
+    ###def validate_accept_tos(self,field):
+    ###    if field.data == False:
+    ###        print 'not check'
+    ###        raise ValidationError('must check accept')
+
+
 class login_form(Form):
-    username = StringField('Username', [validators.data_required('enter your name'), validators.Length(min=4, max=25)])
-    password = PasswordField('Password', [validators.data_required('enter your password')])
-    verify_code = StringField('Verify Dode', [validators.data_required('enter verify code')])
+    username = StringField('Username', validators=[Required(), Length(min=5, max=32,message=u'至少5字符'),
+                    Regexp('^[A-Za-z][A-Za-z0-9_.]*$',0,u'字符(开头) or 数字 or 下划线！')])
+    password = PasswordField('Password', validators=[Required(),Length(4,16,u'密码太短')])
+    verify_code = StringField('Verify Dode',validators= [Required()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Login')
