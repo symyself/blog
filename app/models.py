@@ -1,5 +1,7 @@
 #encoding: utf-8
 from werkzeug import generate_password_hash,check_password_hash
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+from flask import current_app
 from datetime import datetime
 from flask.ext.login import UserMixin
 from . import db, login_manager
@@ -22,9 +24,10 @@ class User(UserMixin,db.Model):
     password_hash = db.Column(db.String(128))
     email   = db.Column(db.String(32),unique=True)
     role_id = db.Column( db.Integer , db.ForeignKey( 'blog_role.id'))
-
     register_date = db.Column(db.DateTime)
     last_login_date = db.Column(db.DateTime)
+    #注册后需要邮件确认
+    confirmed =  db.Column( db.Boolean , default=False )
 
     def __init__(self,username,password,email):
         self.username = username
@@ -45,6 +48,23 @@ class User(UserMixin,db.Model):
 
     def verify_password(self,password):
         return check_password_hash(self.password_hash,password)
+
+    def generate_confirmation_token( self,expiration=3600):
+        s = Serializer( current_app.config['SECRET_KEY'],expiration )
+        return s.dumps( {'confirm':self.id} )
+
+    def confirm( self,token):
+        s = Serializer( current_app.config['SECRET_KEY'])
+        try:
+            data=s.loads( token )
+        except :
+            return False
+        if data.get('confirm') != self.id:
+            return False
+        self.confirmed = True
+        db.session.add( self )
+        return True
+
 
 '''
 Flask-Login 要求程序实现一个回调函数，使用指定的标识符加载用户

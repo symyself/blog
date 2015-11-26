@@ -1,2 +1,10 @@
 Dear {{ user.username }}
-Welcome to <b>songy's blog
+Thansk for registering my site!
+To Confirm you account ,please click on the following link:
+{{ url_for('auth.confirm',token=token,_external=True) }}
+Thanks Again
+                     symyself
+
+
+Notes:不要回复此邮件
+

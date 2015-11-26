@@ -1,2 +1,10 @@
 <p>Dear {{ user.username }},</p>
-<p>Welcome to <b>songy's blog</b>!</p>
+<p>Thansk for registering my site!</p>
+<p>To Confirm you account ,please click on the following link:</p>
+<p><a href="{{ url_for('auth.confirm',token=token,_external=True) }}">{{ url_for('auth.confirm',token=token,_external=True) }}</a></p>
+<p>Thanks Again</p>
+<p>                     symyself</p>
+
+
+<p>Notes:不要回复此邮件</p>
+

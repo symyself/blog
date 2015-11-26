@@ -4,5 +4,5 @@ from . import main
 
 @main.route('/')
 def base():
-    flash('weclome')
+    #flash('weclome')
     return render_template( 'base.html' )

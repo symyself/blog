@@ -3,7 +3,7 @@ from flask import request, render_template,session,g
 from flask import make_response
 from flask import redirect
 from flask import abort, flash, url_for
-from flask.ext.login import login_required,logout_user,login_user
+from flask.ext.login import login_required,logout_user,login_user,current_user
 from ..my_forms import user_forms
 from ..models import User as user
 from ..email import send_email
@@ -58,22 +58,15 @@ def login():
     '''
     login
     '''
-    print 'debug-------------login----------debug'
     #login_form = user_forms.login_form(request.form)
     #if login_form.validate():
     login_form = user_forms.login_form()
     if login_form.validate_on_submit():
         login_result = login_check()
         try:
-            if request.args.get('next') and login_result:
-                print 'login ok next-->'
-                print request.args.get('next')
-                print 'request.args',request.args
-                print 'request',request
+            if request.args.get('next') and login_result is True:
                 return redirect(request.args.get('next'))
             else:
-                print 'request.args',request.args
-                print 'request',request
                 return render_template("welcome.html", password_right=login_result)
         except Exception , e:
             print e
@@ -88,12 +81,12 @@ def logout():
     '''
     logout
     '''
-    print '-------------------logout'
-    #session['login'] = False
-    #session.pop('username',None)
-    logout_user()
-    return redirect(url_for('auth.base'))
-    #return render_template("base.html")
+    if current_user.is_authenticated:
+        logout_user()
+        flash('you have logged out,bye bye!!!')
+        return redirect(url_for('auth.base'))
+    else:
+        return render_template('info.html',info = 'Error:Can\'t logout before login')
 
 
 @auth.route('/register', methods=['GET', 'POST'])
@@ -112,16 +105,39 @@ def register():
                     request.form.get('password'),
                     request.form.get('email'))
             db.session.add(new_user)
+            '''
+            即便通过配置，程序已经可以在请求末尾自动提交数据库变化，这里也要添加
+            db.session.commit() 调用。问题在于，提交数据库之后才能赋予新用户 id 值，而确认令
+            牌需要用到 id，所以不能延后提交。
+            '''
             db.session.commit()
+            token = new_user.generate_confirmation_token()
         except Exception ,e:
             print e
             return 'register error!!!'
         send_email(new_user.email, 'Confirm Your Account',
-                               'auth/email/confirm', user=new_user)
+                               'auth/email/confirm', user=new_user,token=token)
         flash('A new confirmation email has been sent to you by email.')
         return redirect(url_for('auth.login'))
     else:
         return render_template('register2.html', form=reg_form)
+
+
+@auth.route('/confirm/<token>')
+@login_required
+def confirm(token):
+    '''
+    confirm account atfer register
+    '''
+    if current_user.confirmed:
+        return redirect(url_for('main.base'))
+    if current_user.confirm( token ):
+        flash('you have confirmed you account,Thanks!!')
+    else:
+        flash('the confirmation is invalid or has expired')
+    return redirect(url_for('main.base'))
+
+
 
 '''
 为了保护路由只让认证用户访问， Flask-Login 提供了一个 login_required 修饰器。
