@@ -14,6 +14,47 @@ from . import auth
 def base():
     return render_template( 'base.html' )
 
+
+'''
+对蓝本来说， before_request 钩子只能应用到属于蓝本的请求上。若想在
+蓝本中使用针对程序全局请求的钩子， 必须使用 before_app_request 修饰器
+'''
+@auth.before_app_request
+def before_request():
+    print 'request.endpoint:',request.endpoint
+
+    # 未进行邮件确认的账号，只能访问以下路由
+    allow_points= [ 'auth.logout' ,
+            'auth.login' ,
+            'auth.identify' ,
+            'auth.confirm' ,
+            'auth.unconfirmed',
+            'auth.register',
+            'auth.resend_confirm_email',
+            'static',
+            'bootstrap.static' ]
+
+    if current_user.is_authenticated \
+        and not current_user.confirmed \
+        and request.endpoint not in allow_points:
+        return redirect( url_for( 'auth.unconfirmed'))
+
+@auth.route( '/unconfirmed')
+def unconfirmed():
+    if current_user.is_anonymous or current_user.confirmed:
+        return redirect( url_for ('main.base'))
+    return render_template('unconfirmed.html')
+
+@auth.route('/resend_confirm_email')
+@login_required
+def resend_confirm_email():
+    token = current_user.generate_confirmation_token()
+    send_email(current_user.email, 'Confirm Your Account(resend)',
+            'auth/email/confirm', user=current_user,token=token)
+    flash('A new confirmation email has been sent to your email.')
+    return redirect(url_for('main.base'))
+
+
 def password_right( user_for_login):
     if not user_for_login.verify_password(request.form.get('password')):
         g.error_msg = u'密码错误'
@@ -60,6 +101,8 @@ def login():
     '''
     #login_form = user_forms.login_form(request.form)
     #if login_form.validate():
+    if not current_user.is_anonymous:
+        return render_template('info.html',info = ' allready logged in !!!')
     login_form = user_forms.login_form()
     if login_form.validate_on_submit():
         login_result = login_check()
@@ -96,6 +139,9 @@ def register():
     '''
     ##reg_form = user_forms.register_form(request.form)
     ##if request.method == 'POST' and reg_form.validate():
+    if not current_user.is_anonymous:
+        return render_template('info.html',info = ' allready logged in !!!can\'t reigister ')
+
     reg_form = user_forms.register_form()
     if reg_form.validate_on_submit():
         flash('thanks for registering')

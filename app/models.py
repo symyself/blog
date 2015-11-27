@@ -7,7 +7,7 @@ from flask.ext.login import UserMixin
 from . import db, login_manager
 
 class Role( db.Model ):
-    #__tablename__ = app.config['TABLE_PREFIX']+'role'
+    #__tablename__ = current_app.config['TABLE_PREFIX']+'role'
     __tablename__ = 'blog_role'
     id = db.Column( db.Integer ,primary_key=True)
     rolename = db.Column ( db.String(32),unique=True )
@@ -17,7 +17,7 @@ class Role( db.Model ):
         return '<Role %r>'%self.rolename
 
 class User(UserMixin,db.Model):
-    #__tablename__ = app.config['TABLE_PREFIX']+'user'
+    #__tablename__ = current_app.config['TABLE_PREFIX']+'user'
     __tablename__ = 'blog_user'
     id = db.Column(db.Integer,primary_key=True)
     username = db.Column(db.String(64),unique=True,index=True)
