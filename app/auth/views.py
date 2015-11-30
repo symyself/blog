@@ -176,7 +176,8 @@ def confirm(token):
     confirm account atfer register
     '''
     if current_user.confirmed:
-        return redirect(url_for('main.base'))
+        #return redirect(url_for('main.base'))
+        return render_template('info.html',info = '此验证地址已失效!')
     if current_user.confirm( token ):
         flash('you have confirmed you account,Thanks!!')
     else:
@@ -193,3 +194,84 @@ def confirm(token):
 @login_required
 def secret():
     return render_template('info.html',info = ' this is secret page,')
+
+@auth.route('/userinfo')
+@login_required
+def userinfo():
+    return render_template('auth/userinfo.html')
+
+@auth.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = user_forms.change_password_form()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.old_password.data):
+            current_user.password = form.new_password.data
+            db.session.commit()
+            return render_template('info.html',info = 'Your password chenged successfully!')
+        else:
+            return render_template('info.html',info = 'Error,old password is not correct!!!')
+    else:
+        return render_template('auth/change_password.html',form=form)
+
+@auth.route('/reset_password', methods=['GET', 'POST'])
+def reset_password_request():
+    if not current_user.is_anonymous:
+        return redirect( url_for( 'main.base'))
+    form = user_forms.reset_password_email_form()
+    if form.validate_on_submit():
+        reset_user=user.query.filter_by(email=form.email.data).first()
+        if reset_user is not None:
+            token= reset_user.reset_password_token()
+            send_email(reset_user.email, 'RESET YOUR PASSWORD',
+                    'auth/email/reset_password', user=reset_user,token=token)
+            flash('A email has been sent to your email.')
+            return redirect( url_for( 'main.base'))
+        else:
+            return render_template('info.html',info = 'Error, email '+form.email.data+'not register!')
+    else:
+        return render_template('auth/reset_password.html',form=form)
+
+
+@auth.route('/reset_password/<token>/<mail>', methods=['GET', 'POST'])
+def reset_password(token,mail):
+    if not current_user.is_anonymous:
+        return redirect( url_for( 'main.base'))
+    form = user_forms.reset_password_form()
+    reset_user=user.query.filter_by(email=mail).first()
+    if reset_user is None or reset_user.check_reset_password_token(token) is False:
+        return render_template('info.html',info = 'Error,无效的连接!!!')
+    if form.validate_on_submit():
+        if reset_user.reset_password(form.new_password.data):
+            return render_template('info.html',info = 'Your password chenged successfully!')
+        else:
+            return render_template('info.html',info = 'Error,while changing password!!!')
+    else:
+        return render_template('auth/reset_password.html',form=form)
+
+
+@auth.route('/change_email', methods=['GET', 'POST'])
+@login_required
+def change_email_request():
+    form = user_forms.change_email_form()
+    if form.validate_on_submit():
+        if current_user.verify_password(form.password.data):
+            token = current_user.change_email_token(new_email=form.new_email.data)
+            send_email( form.new_email.data,'CHANGE YOUR EMAIL',
+                    'auth/email/change_email',user=current_user,token=token)
+            flash('A email has been sent to your new email addr:'+form.new_email.data)
+            return redirect( url_for( 'main.base'))
+        else:
+            return render_template('info.html',info = 'Error, password Error')
+    else:
+        return render_template('auth/change_email.html',form=form)
+
+@auth.route('/change_email/<token>')
+@login_required
+def change_email(token):
+    if current_user.change_email( token ):
+        flash('change email succeed!!')
+    else:
+        flash('the link is invalid or has expired')
+    return redirect(url_for('auth.userinfo'))
+    

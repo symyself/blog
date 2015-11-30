@@ -24,7 +24,7 @@ class register_form(Form):
                     Required() ,
                     Length(5,32,'至少5字符'),
                     Regexp('^[A-Za-z][A-Za-z0-9_.]*$',0,u'字符(开头)，数字，下划线！')])
-    email = StringField('email', validators=[Required(),Length(4,32,u'密码太短了！'),Email()])
+    email = StringField('email', validators=[Required(),Length(4,32,u'邮件地址太短了！'),Email()])
     password = PasswordField('password',
                 validators=[Required(),Length(4,16,u'密码太短!'), EqualTo('confirm', message=u'两次密码不一致')])
     confirm = PasswordField('Repeat Password',validators=[Required()])
@@ -59,3 +59,40 @@ class login_form(Form):
     verify_code = StringField('Verify Dode',validators= [Required()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Login')
+
+class change_password_form(Form):
+    old_password = PasswordField(u'旧密码', validators=[Required(),Length(4,16,u'密码太短')])
+    new_password = PasswordField(u'新密码',
+                validators=[
+                    Required(),Length(4,16,u'密码太短!'),
+                    EqualTo('confirm', message=u'两次密码不一致')])
+    confirm = PasswordField(u'新密码',validators=[Required()])
+    submit = SubmitField(u'修改')
+
+class reset_password_email_form(Form):
+    email = StringField('your email for reset password',
+                validators=[Required(),Length(4,32,u'邮件地址太短了！'),Email(message=u'不太像一个邮件地址额--')])
+    submit = SubmitField(u'确定')
+    def validate_email(self,field):
+        if not User.query.filter_by( email=field.data).first():
+            raise ValidationError( str( field.data ) + '\n 还木有注册呢，快去注册吧！')
+
+class reset_password_form(Form):
+    new_password = PasswordField(u'新密码',
+                validators=[
+                    Required(),
+                    Length(4,16,u'密码太短!'),
+                    EqualTo('confirm',message=u'两次密码不一致')
+                    ]
+                )
+    confirm = PasswordField(u'新密码',validators=[Required()])
+    submit = SubmitField(u'确定')
+
+class change_email_form(Form):
+    password = PasswordField(u'密码', validators=[Required(),Length(4,16,u'密码太短')])
+    new_email = StringField(u'新邮件地址',
+                validators=[Required(),Length(4,32,u'邮件地址太短了！'),Email(message=u'不太像一个邮件地址额--')])
+    submit = SubmitField(u'确定')
+    def validate_new_email(self,field):
+        if User.query.filter_by( email=field.data).first():
+            raise ValidationError( str( field.data ) + '\n 已经注册了！换一个吧！')

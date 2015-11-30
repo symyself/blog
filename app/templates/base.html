@@ -23,7 +23,7 @@
 							 <li><a href="{{ url_for('auth.logout') }}">LogOut</a></li>
 							 </ul>
 							 <ul class="nav navbar-nav pull-right">
-                                 <li><a>{{ current_user.username }}</a></li>
+                                 <li><a href="{{ url_for('auth.userinfo') }}">{{ current_user.username }}</a></li>
 							 </ul>
 					 {% else %}
 							 <ul class="nav navbar-nav pull-right">

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}enjoy01 - userinfo{% endblock %}
+{% block page_content %}
+<div class="page-header">
+        <h3>{{ current_user.username }}</h3>
+        <h3><a href="{{ url_for('auth.change_password') }}">修改密码</a></h3>
+        <h3>{{ current_user.email }}</h3>
+        <h3><a href="{{ url_for('auth.change_email_request') }}">修改邮件</a></h3>
+        <h3>{{ current_user.register_date }}</h3>
+{% endblock %}

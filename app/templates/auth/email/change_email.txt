@@ -1,0 +1,11 @@
+Dear {{ user.username }}:
+Click On the Link to let your new email take effort:
+
+{{ url_for('auth.change_email',token=token,_external=True) }}
+
+If you don't ask for changing email ,Ignore this mail!
+                     symyself
+
+
+Notes:不要回复此邮件
+

@@ -9,7 +9,9 @@
 {{ wtf.quick_form(form) }}
 </div>
 <div class="page-header" style="width:300px;float:left;margin:0px auto;" >
-<img src="{{ url_for('auth.identify') }}" style="position:relative;left:0px;top:240px;" alt="img error" onclick="this.src='{{ url_for('auth.identify') }}'+'?'+Math.random();"/>
+<img src="{{ url_for('auth.identify') }}" style="position:relative;left:0px;top:236px;" alt="img error" onclick="this.src='{{ url_for('auth.identify') }}'+'?'+Math.random();"/>
 </div>
-
+<label style="position:absolute;left:396px;top:400px">
+    <a href="{{ url_for('auth.reset_password_request') }}">忘记密码</a>
+</label>
 {% endblock %}
