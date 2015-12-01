@@ -171,13 +171,12 @@ def userinfo():
 @login_required
 def change_password():
     form = user_forms.change_password_form()
-    if form.validate_on_submit():
-        if current_user.verify_password(form.old_password.data):
-            current_user.password = form.new_password.data
-            db.session.commit()
-            return render_template('info.html',info = 'Your password chenged successfully!')
-        else:
-            return render_template('info.html',info = 'Error,old password is not correct!!!')
+    if form.validate_on_submit():#已在form中对旧密码进行验证
+        current_user.password = form.new_password.data
+        db.session.commit()
+        logout_user(  )
+        flash(u'密码修改成功，请用新密码重新登陆！')
+        return redirect(url_for('auth.login'))
     else:
         return render_template('auth/change_password.html',form=form)
 
@@ -241,4 +240,3 @@ def change_email(token):
     else:
         flash('the link is invalid or has expired')
     return redirect(url_for('auth.userinfo'))
-    

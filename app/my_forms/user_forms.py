@@ -5,6 +5,7 @@ from wtforms.validators import Required,DataRequired,Length,Email,Regexp,EqualTo
 from wtforms import ValidationError
 from ..models import User
 from flask import session
+from flask.ext.login import current_user
 
 '''
 from wtforms import Form, BooleanField, TextField, PasswordField, validators, StringField, SubmitField
@@ -85,6 +86,10 @@ class change_password_form(Form):
     confirm = PasswordField(u'新密码',validators=[Required()])
     submit = SubmitField(u'修改')
 
+    def validate_old_password(self,field):
+        if current_user.verify_password( field.data ) is False:
+            raise ValidationError(' 密码错误!!')
+
 class reset_password_email_form(Form):
     email = StringField('your email for reset password',
                 validators=[Required(),Length(4,32,u'邮件地址太短了！'),Email(message=u'不太像一个邮件地址额--')])
@@ -109,6 +114,10 @@ class change_email_form(Form):
     new_email = StringField(u'新邮件地址',
                 validators=[Required(),Length(4,32,u'邮件地址太短了！'),Email(message=u'不太像一个邮件地址额--')])
     submit = SubmitField(u'确定')
+    def validate_password(self,field):
+        if current_user.verify_password( field.data ) is False:
+            raise ValidationError(' 密码错误!!')
+
     def validate_new_email(self,field):
         if User.query.filter_by( email=field.data).first():
             raise ValidationError( str( field.data ) + '\n 已经注册了！换一个吧！')
