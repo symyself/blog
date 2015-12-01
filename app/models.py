@@ -53,11 +53,11 @@ class User(UserMixin,db.Model):
         s = Serializer( current_app.config['SECRET_KEY'],expiration )
         return s.dumps( {'confirm':self.id} )
 
-    def reset_password_token( self,expiration=1800):
+    def generate_reset_password_token( self,expiration=1800):
         s = Serializer( current_app.config['SECRET_KEY'],expiration )
         return s.dumps( {'name':self.username} )
 
-    def change_email_token( self,new_email,expiration=1800):
+    def generage_change_email_token( self,new_email,expiration=1800):
         s = Serializer( current_app.config['SECRET_KEY'],expiration )
         return s.dumps( {'name':self.username,'new_email':new_email} )
 
@@ -71,16 +71,6 @@ class User(UserMixin,db.Model):
             return False
         self.confirmed = True
         db.session.add( self )
-        return True
-
-    def check_reset_password_token(self,token):
-        s = Serializer( current_app.config['SECRET_KEY'])
-        try:
-            data=s.loads( token )
-        except :
-            return False
-        if data.get('name') != self.username:
-            return False
         return True
 
     def reset_password( self,new_password):
@@ -103,24 +93,6 @@ class User(UserMixin,db.Model):
         db.session.add( self )
         return True
 
-    def check_reset_password_token(self,token):
-        s = Serializer( current_app.config['SECRET_KEY'])
-        try:
-            data=s.loads( token )
-        except :
-            return False
-        if data.get('name') != self.username:
-            return False
-        return True
-
-    def reset_password( self,new_password):
-        try:
-            self.password = new_password
-            db.session.add( self )
-        except :
-            return False
-        return True
-
     @staticmethod
     def get_user_from_token( token):
         s = Serializer( current_app.config['SECRET_KEY'])
@@ -133,15 +105,6 @@ class User(UserMixin,db.Model):
             return None
         user = User.query.filter_by( username=username ).first()
         return user
-
-'''
-Flask-Login 要求程序实现一个回调函数，使用指定的标识符加载用户
-加载用户的回调函数接收以 Unicode 字符串形式表示的用户标识符。如果能找到用户，这
-个函数必须返回用户对象；否则应该返回 None。
-'''
-@login_manager.user_loader
-def load_user( user_id):
-    return User.query.get( int( user_id) )
 
 '''
 Flask-Login 要求程序实现一个回调函数，使用指定的标识符加载用户

@@ -187,7 +187,7 @@ def reset_password_request():
     form = user_forms.reset_password_email_form()
     if form.validate_on_submit():#在form中验证邮件已经注册
         reset_user=user.query.filter_by(email=form.email.data).first()
-        token= reset_user.reset_password_token()
+        token= reset_user.generate_reset_password_token()
         send_email(reset_user.email, 'RESET YOUR PASSWORD',
                 'auth/email/reset_password', user=reset_user,token=token)
         flash('A email has been sent to your email.')
@@ -218,7 +218,7 @@ def reset_password(token):
 def change_email_request():
     form = user_forms.change_email_form()
     if form.validate_on_submit():#已在form中对旧密码进行验证
-        token = current_user.change_email_token(new_email=form.new_email.data)
+        token = current_user.generate_change_email_token(new_email=form.new_email.data)
         send_email( form.new_email.data,'CHANGE YOUR EMAIL',
                 'auth/email/change_email',user=current_user,token=token)
         flash('A email has been sent to your new email addr:'+form.new_email.data)
