@@ -6,15 +6,48 @@ from datetime import datetime
 from flask.ext.login import UserMixin
 from . import db, login_manager
 
+class Permission():
+    FOLLOW=0x01 #可关注别人
+    COMMENT=0x02    #可评论别人的文章
+    WRITE_ARTICLES=0x04 #可原创文章
+    MODERATE_COMMENTS=0x08 #可管理不当评论
+    ADMINISTER=0x80 #管理员
+
 class Role( db.Model ):
     #__tablename__ = current_app.config['TABLE_PREFIX']+'role'
     __tablename__ = 'blog_role'
     id = db.Column( db.Integer ,primary_key=True)
     rolename = db.Column ( db.String(32),unique=True )
+
+    ##是否为新注册用户的默认角色
+    default = db.Column ( db.Boolean , default=False ,index=True)
+
+    ##二进制 一个位置1 表示具有某种权限
+    permissions = db.Column( db.Integer )
+
     users = db.relationship('User',backref='role',lazy='dynamic')
 
     def __repr__(self):
         return '<Role %r>'%self.rolename
+
+    @staticmethod
+    def insert_roles():
+        user_permission = Permission.FOLLOW | Permission.COMMENT | Permission.WRITE_ARTICLES
+        moderator_permission = user_permission | Permission.MODERATE_COMMENTS
+        administer_permission = 0xff #所有权限
+        roles={
+                'User':(user_permission,True),
+                'Moderator':(moderator_permission,False),
+                'Administrator':(administer_permission,False),
+                }
+        for rolename in roles.keys():
+            role = Role.query.filter_by( rolename = rolename ).first()
+            if role is None:
+                role = Role( rolename=rolename )
+            role.permissions = roles[rolename][0]
+            role.default = roles[rolename][1]
+            db.session.add( role)
+        db.session.commit()
 
 class User(UserMixin,db.Model):
     #__tablename__ = current_app.config['TABLE_PREFIX']+'user'
@@ -29,11 +62,16 @@ class User(UserMixin,db.Model):
     #注册后需要邮件确认
     confirmed =  db.Column( db.Boolean , default=False )
 
-    def __init__(self,username,password,email):
+    def __init__(self,username,password,email,**kwargs):
+        super( User,self).__init__( **kwargs )
         self.username = username
         self.password = password
         self.email  = email
         self.register_date = datetime.now()
+        if self.email == current_app.config['ADMIN_EMAIL']:
+            self.role = Role.query.filter_by( rolename = 'Administrator' ).first()
+        else:
+            self.role = Role.query.filter_by( default = True ).first()
 
     def __repr__(self):
         return '<User %s %r>' %(self.username,self.register_date)

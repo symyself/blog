@@ -106,6 +106,7 @@ def register():
     '''
     ##reg_form = user_forms.register_form(request.form)
     ##if request.method == 'POST' and reg_form.validate():
+    print 'start register'
     if not current_user.is_anonymous:
         return render_template('info.html',info = ' allready logged in !!!can\'t reigister ')
 

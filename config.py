@@ -6,7 +6,7 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     MAIL_SUBJECT_PREFIX = '[songy blog]'
     MAIL_SENDER         = 'Admin <symyself@163.com>'
-    ADMIN               = os.environ.get('FLASK_ADMIN') or 'songy'
+    ADMIN_EMAIL               = os.environ.get('FLASK_ADMIN_EMAIL') or 'symyself@163.com'
     @staticmethod
     def init_app(app):
         pass
