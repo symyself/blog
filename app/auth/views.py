@@ -54,46 +54,6 @@ def resend_confirm_email():
     flash('A new confirmation email has been sent to your email.')
     return redirect(url_for('main.base'))
 
-
-def password_right( user_for_login):
-    if not user_for_login.verify_password(request.form.get('password')):
-        g.error_msg = u'密码错误'
-        return False
-    else:
-        return True
-
-
-def verify_code_right():
-    user_code = request.form.get('verify_code')
-    system_code = session['answer']
-    if user_code == system_code:
-        return True
-    else:
-        g.error_msg = u'验证码错误'
-        return False
-
-def login_check():
-    if not verify_code_right():
-        return False
-
-    user_for_login=user.query.filter_by( username=request.form.get('username')).first()
-    if not user_for_login:
-        g.error_msg=u'用户不存在'
-        return False
-    if password_right( user_for_login) :
-        ##session['username'] = user_for_login.username
-        ##session['login'] = True
-        '''
-        login_user() 函数的参数是要登录的用户，以及可选的“记住我”布
-        尔值，“记住我”也在表单中填写。如果值为 False，那么关闭浏览器后用户会话就过期
-        了，所以下次用户访问时要重新登录。 如果值为 True，那么会在用户浏览器中写入一个长
-        期有效的 cookie，使用这个 cookie 可以复现用户会话。
-        '''
-        login_user(user_for_login , request.form.get('remember_me'))
-        return True
-    else:
-        return False
-
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     '''
@@ -105,15 +65,22 @@ def login():
         return render_template('info.html',info = ' allready logged in !!!')
     login_form = user_forms.login_form()
     if login_form.validate_on_submit():
-        login_result = login_check()
-        try:
-            if request.args.get('next') and login_result is True:
-                return redirect(request.args.get('next'))
-            else:
-                return render_template("welcome.html", password_right=login_result)
-        except Exception , e:
-            print e
-            return 'welcome.html error!!!'
+        # 改为在 login_form 里面对用户名，密码，验证码验证
+        # 如果 validate_on_submit() 为True,则用户名，密码，验证码全正确，就不需要在这里验证了
+        user_for_login=user.query.filter_by( username=request.form.get('username')).first()
+
+        '''
+        login_user() 函数的参数是要登录的用户，以及可选的“记住我”布
+        尔值，“记住我”也在表单中填写。如果值为 False，那么关闭浏览器后用户会话就过期
+        了，所以下次用户访问时要重新登录。 如果值为 True，那么会在用户浏览器中写入一个长
+        期有效的 cookie，使用这个 cookie 可以复现用户会话。
+        '''
+
+        login_user(user_for_login , request.form.get('remember_me'))
+        if request.args.get('next'):
+            return redirect(request.args.get('next'))
+        else:
+            return render_template("welcome.html")
     else:
         #return redirect(request.args.get('next') or url_for('main.index'))
         return render_template("login2.html", form=login_form)

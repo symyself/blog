@@ -4,6 +4,7 @@ from wtforms import BooleanField, PasswordField, StringField, SubmitField
 from wtforms.validators import Required,DataRequired,Length,Email,Regexp,EqualTo
 from wtforms import ValidationError
 from ..models import User
+from flask import session
 
 '''
 from wtforms import Form, BooleanField, TextField, PasswordField, validators, StringField, SubmitField
@@ -59,6 +60,21 @@ class login_form(Form):
     verify_code = StringField('Verify Dode',validators= [Required()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Login')
+    def validate_username(self,field):
+        if not User.query.filter_by(username=field.data).first():
+            raise ValidationError(str(field.data)+' 用户不存在!!')
+
+    def validate_password(self,field):
+        user=User.query.filter_by(username=self.username.data).first()
+        if user is not None:
+            if user.verify_password( field.data ) is False:
+                raise ValidationError(' 密码错误!!')
+
+    def validate_verify_code(self,field):
+        user_code = field.data
+        system_code = session['answer']
+        if user_code != system_code:
+            raise ValidationError(' 验证码错误!!')
 
 class change_password_form(Form):
     old_password = PasswordField(u'旧密码', validators=[Required(),Length(4,16,u'密码太短')])
