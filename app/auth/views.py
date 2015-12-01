@@ -185,27 +185,24 @@ def reset_password_request():
     if not current_user.is_anonymous:
         return redirect( url_for( 'main.base'))
     form = user_forms.reset_password_email_form()
-    if form.validate_on_submit():
+    if form.validate_on_submit():#在form中验证邮件已经注册
         reset_user=user.query.filter_by(email=form.email.data).first()
-        if reset_user is not None:
-            token= reset_user.reset_password_token()
-            send_email(reset_user.email, 'RESET YOUR PASSWORD',
-                    'auth/email/reset_password', user=reset_user,token=token)
-            flash('A email has been sent to your email.')
-            return redirect( url_for( 'main.base'))
-        else:
-            return render_template('info.html',info = 'Error, email '+form.email.data+'not register!')
+        token= reset_user.reset_password_token()
+        send_email(reset_user.email, 'RESET YOUR PASSWORD',
+                'auth/email/reset_password', user=reset_user,token=token)
+        flash('A email has been sent to your email.')
+        return redirect( url_for( 'main.base'))
     else:
         return render_template('auth/reset_password.html',form=form)
 
 
-@auth.route('/reset_password/<token>/<mail>', methods=['GET', 'POST'])
-def reset_password(token,mail):
+@auth.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
     if not current_user.is_anonymous:
         return redirect( url_for( 'main.base'))
     form = user_forms.reset_password_form()
-    reset_user=user.query.filter_by(email=mail).first()
-    if reset_user is None or reset_user.check_reset_password_token(token) is False:
+    reset_user=user.get_user_from_token( token )
+    if reset_user is None:
         return render_template('info.html',info = 'Error,无效的连接!!!')
     if form.validate_on_submit():
         if reset_user.reset_password(form.new_password.data):
@@ -220,15 +217,12 @@ def reset_password(token,mail):
 @login_required
 def change_email_request():
     form = user_forms.change_email_form()
-    if form.validate_on_submit():
-        if current_user.verify_password(form.password.data):
-            token = current_user.change_email_token(new_email=form.new_email.data)
-            send_email( form.new_email.data,'CHANGE YOUR EMAIL',
-                    'auth/email/change_email',user=current_user,token=token)
-            flash('A email has been sent to your new email addr:'+form.new_email.data)
-            return redirect( url_for( 'main.base'))
-        else:
-            return render_template('info.html',info = 'Error, password Error')
+    if form.validate_on_submit():#已在form中对旧密码进行验证
+        token = current_user.change_email_token(new_email=form.new_email.data)
+        send_email( form.new_email.data,'CHANGE YOUR EMAIL',
+                'auth/email/change_email',user=current_user,token=token)
+        flash('A email has been sent to your new email addr:'+form.new_email.data)
+        return redirect( url_for( 'main.base'))
     else:
         return render_template('auth/change_email.html',form=form)
 

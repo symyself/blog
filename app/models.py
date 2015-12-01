@@ -121,6 +121,19 @@ class User(UserMixin,db.Model):
             return False
         return True
 
+    @staticmethod
+    def get_user_from_token( token):
+        s = Serializer( current_app.config['SECRET_KEY'])
+        try:
+            data=s.loads( token )
+        except :
+            return None
+        username=data.get('name')
+        if username is None:
+            return None
+        user = User.query.filter_by( username=username ).first()
+        return user
+
 '''
 Flask-Login 要求程序实现一个回调函数，使用指定的标识符加载用户
 加载用户的回调函数接收以 Unicode 字符串形式表示的用户标识符。如果能找到用户，这
