@@ -3,7 +3,7 @@ from werkzeug import generate_password_hash,check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
 from datetime import datetime
-from flask.ext.login import UserMixin
+from flask.ext.login import UserMixin,AnonymousUserMixin
 from . import db, login_manager
 
 class Permission():
@@ -68,6 +68,7 @@ class User(UserMixin,db.Model):
         self.password = password
         self.email  = email
         self.register_date = datetime.now()
+        #为新用户定义角色
         if self.email == current_app.config['ADMIN_EMAIL']:
             self.role = Role.query.filter_by( rolename = 'Administrator' ).first()
         else:
@@ -131,6 +132,16 @@ class User(UserMixin,db.Model):
         db.session.add( self )
         return True
 
+    def check_permission(self,permissions):
+        '''
+        check user has permissions or not
+        '''
+        return self.role is not None and ((self.role.permissions & permissions ) == permissions )
+
+    def is_administor(self):
+        return self.check_permission( Permission.ADMINISTER )
+
+
     @staticmethod
     def get_user_from_token( token):
         s = Serializer( current_app.config['SECRET_KEY'])
@@ -145,6 +156,19 @@ class User(UserMixin,db.Model):
         return user
 
 '''
+出于一致性考虑，我们还定义了 AnonymousUser 类，并实现了 check_permission() 方法和
+is_administrator() 方法。这个对象继承自 Flask-Login 中的 AnonymousUserMixin
+类，并将其设为用户未登录时 current_user 的值。这样程序不用先检查用户是否登录，就能自由调用
+current_user.check_permission() 和 current_user.is_administrator()。
+'''
+class AnonymousUser(AnonymousUserMixin):
+    def check_permission(self,permissions):
+        return False
+    def is_administor(self):
+        return False
+login_manager.anonymous_user = AnonymousUser
+
+'''
 Flask-Login 要求程序实现一个回调函数，使用指定的标识符加载用户
 加载用户的回调函数接收以 Unicode 字符串形式表示的用户标识符。如果能找到用户，这
 个函数必须返回用户对象；否则应该返回 None。
@@ -152,3 +176,4 @@ Flask-Login 要求程序实现一个回调函数，使用指定的标识符加�
 @login_manager.user_loader
 def load_user( user_id):
     return User.query.get( int( user_id) )
+
