@@ -1,7 +1,7 @@
 #encoding: utf-8
 from werkzeug import generate_password_hash,check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from flask import current_app
+from flask import current_app,url_for
 from datetime import datetime
 from flask.ext.login import UserMixin,AnonymousUserMixin
 from . import db, login_manager
@@ -57,17 +57,21 @@ class User(UserMixin,db.Model):
     password_hash = db.Column(db.String(128))
     email   = db.Column(db.String(32),unique=True)
     role_id = db.Column( db.Integer , db.ForeignKey( 'blog_role.id'))
-    register_date = db.Column(db.DateTime)
-    last_login_date = db.Column(db.DateTime)
+    location = db.Column( db.String(128))
+    #db.String 和 db.Text 的区别在于后者不需要指定最大长度
+    about = db.Column( db.Text())
+    register_date = db.Column(db.DateTime,default=datetime.now)
+    last_login_date = db.Column(db.DateTime,default=datetime.now)
     #注册后需要邮件确认
     confirmed =  db.Column( db.Boolean , default=False )
+    head_img = db.Column( db.String(64) , default='no.jpeg')
 
     def __init__(self,username,password,email,**kwargs):
         super( User,self).__init__( **kwargs )
         self.username = username
         self.password = password
         self.email  = email
-        self.register_date = datetime.now()
+        #self.register_date = datetime.now()
         #为新用户定义角色
         if self.email == current_app.config['ADMIN_EMAIL']:
             self.role = Role.query.filter_by( rolename = 'Administrator' ).first()
@@ -141,6 +145,18 @@ class User(UserMixin,db.Model):
     def is_administor(self):
         return self.check_permission( Permission.ADMINISTER )
 
+    def update_login_time( self):
+        '''update login time'''
+        self.last_login_date = datetime.now()
+        db.session.add(self)
+        db.session.commit()
+
+    def image_url( self ):
+        '''
+        return head image url for user
+        '''
+        img='user_head/'+self.head_img
+        return url_for('static',filename=img)
 
     @staticmethod
     def get_user_from_token( token):

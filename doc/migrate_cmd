@@ -1,0 +1,11 @@
+##
+##migrate 使用
+##python manage.py db init
+## python manage.py db migrate -m 'initial migtation'
+## python manage.py db upgrade
+## python manage.py db downgrade
+## python manage.py db upgrade
+##
+##迁移数据时步骤
+##    a:python manage.py db migrate -m '操作备注'
+##    b:python manage.py db upgrade

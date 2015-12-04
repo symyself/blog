@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}enjoy01 - userinfo{% endblock %}
+{% block page_content %}
+<div class="page-header">
+        <img class="img-rounded profile-thumbnail" src="{{ user.image_url() }}"  height="100" width="100">
+        {% if user == current_user %}
+        <h2> {{ user.username }} <a href="{{ url_for('auth.change_password') }}">修改密码</a></h2>
+        <h3>邮件:    {{ user.email }}  <a href="{{ url_for('auth.change_email_request') }}">修改邮件</a></h3>
+        {% else %}
+        <h2> {{ user.username }}</h2>
+        {% endif %}
+        {% if user.location %}
+        <h3>坐标:    {{ user.location }}</h3>
+        {% endif %}
+        {% if user.about %}
+        <h3>自我介绍:{{ user.about }}</h3>
+        {% endif %}
+        {% if user == current_user %}
+            {% if not user.location or not user.about %}
+                <a href="{{ url_for('main.edit_profile') }}">添加信息</a>
+            {% else %}
+                <a href="{{ url_for('main.edit_profile') }}">修改信息</a>
+            {% endif %}
+        {% endif %}
+        <h4>注册时间:{{ user.register_date }}</h4>
+{% endblock %}

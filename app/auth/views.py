@@ -77,6 +77,8 @@ def login():
         '''
 
         login_user(user_for_login , request.form.get('remember_me'))
+        #更新login时间
+        user_for_login.update_login_time()
         if request.args.get('next'):
             return redirect(request.args.get('next'))
         else:

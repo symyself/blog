@@ -1,6 +1,6 @@
 # encoding: utf-8
 from flask.ext.wtf import Form
-from wtforms import BooleanField, PasswordField, StringField, SubmitField
+from wtforms import BooleanField, PasswordField, StringField, SubmitField,TextAreaField
 from wtforms.validators import Required,DataRequired,Length,Email,Regexp,EqualTo
 from wtforms import ValidationError
 from ..models import User
@@ -121,3 +121,12 @@ class change_email_form(Form):
     def validate_new_email(self,field):
         if User.query.filter_by( email=field.data).first():
             raise ValidationError( str( field.data ) + '\n 已经注册了！换一个吧！')
+
+class edit_profile_form(Form):
+    location = StringField(u'坐标',validators=[Length(0,16)])
+    about = TextAreaField(u'自我介绍',)
+    submit = SubmitField(u'确定')
+    ##def __init__(self,user,**kwargs):
+    ##    self.location.data= user.location
+    ##    self.about.data = user.about
+    ##    super( edit_profile_form,self).__init__( **kwargs )
