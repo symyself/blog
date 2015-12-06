@@ -1,12 +1,25 @@
 {% extends "base.html" %}
+
+{% block head %}
+{{ super() }}
+    <link rel="stylesheet" type="text/css" href="/static/image-picker/image-picker.css">
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+    <script src="/static/image-picker/image-picker.js" type="text/javascript"></script>
+{% endblock %}
+
+
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}enjoy01 - change password{% endblock %}
 
 {% block page_content %}
-<div class="page-header" style="width:300px;float:left;margin:0px auto;" >
+<div class="page-header" style="float:left;margin:0px auto;" >
     <h2>修改个人信息</h2>
-    <select class="image-picker">
+    <div class="picker">
+    <select class="image-picker show-html">
         <option data-img-src="/static/user_head/0884eaba68735afe9f0a41675676c6d6.jpeg" value="1">  0884eaba68735afe9f0a41675676c6d6.jpeg  </option>
         <option data-img-src="/static/user_head/15c16dca753e02f88d24a8e768ab51ca.jpeg" value="2">  15c16dca753e02f88d24a8e768ab51ca.jpeg  </option>
         <option data-img-src="/static/user_head/314a47601ef6514ae02c928c6c8b3baf.jpeg" value="3">  314a47601ef6514ae02c928c6c8b3baf.jpeg  </option>
@@ -18,26 +31,46 @@
         <option data-img-src="/static/user_head/ec580cdbde25a148eaf381e6a633e1b4.jpeg" value="9">  ec580cdbde25a148eaf381e6a633e1b4.jpeg  </option>
         <option data-img-src="/static/user_head/no.jpeg" value="10">  no.jpeg  </option>
     </select>
+    <ul class="thumbnails image_picker_selector">
+        <li><div class="thumbnail selected"><img src="/static/user_head/no.jpeg" class="image_picker_image" height="100" width="100"></div></li>
+        <li><div class="thumbnail"><img src="/static/user_head/0884eaba68735afe9f0a41675676c6d6.jpeg" class="image_picker_image" height="100" width="100"></div></li>
+        <li><div class="thumbnail"><img src="/static/user_head/15c16dca753e02f88d24a8e768ab51ca.jpeg" class="image_picker_image" height="100" width="100"></div></li>
+        <li><div class="thumbnail"><img src="/static/user_head/314a47601ef6514ae02c928c6c8b3baf.jpeg" class="image_picker_image" height="100" width="100"></div></li>
+        <li><div class="thumbnail"><img src="/static/user_head/560317b58751214e51a617d72c72ea90.jpeg" class="image_picker_image" height="100" width="100"></div></li>
+        <li><div class="thumbnail"><img src="/static/user_head/9de177c8dcf7f60baa155b2247bd1c22.jpeg" class="image_picker_image" height="100" width="100"></div></li>
+        <li><div class="thumbnail"><img src="/static/user_head/c523b43d258172a002de82dd4a3d4ad2.jpeg" class="image_picker_image" height="100" width="100"></div></li>
+        <li><div class="thumbnail"><img src="/static/user_head/ccdb254542bff3e0477b88b9f4a2c593.jpeg" class="image_picker_image" height="100" width="100"></div></li>
+        <li><div class="thumbnail"><img src="/static/user_head/e84ee95856aa152979889dd6ee35191d.jpeg" class="image_picker_image" height="100" width="100"></div></li>
+        <li><div class="thumbnail"><img src="/static/user_head/ec580cdbde25a148eaf381e6a633e1b4.jpeg" class="image_picker_image" height="100" width="100"></div></li>
+    </ul>
+    </div>
+</div>
+<div class="page-header" style="width:300px;float:left;margin:0px auto;" >
 {{ wtf.quick_form(form) }}
 </div>
 
 <script type="text/javascript">
+
     jQuery("select.image-picker").imagepicker({
-             hide_select:  false,
-                });
-   jQuery("select.image-picker.show-labels").imagepicker({
-                hide_select:  false,
-                     show_label:   true,
-                        });
-   jQuery("select.image-picker.limit_callback").imagepicker({
-                limit_reached:  function(){alert('We are full!')},
-                     hide_select:    false
-                        });
-   var container = jQuery("select.image-picker.masonry").next("ul.thumbnails");
-      container.imagesLoaded(function(){
-                   container.masonry({
-                                  itemSelector:   "li",
-                                       });
+                  hide_select:  true,
                       });
-</script>
+
+    jQuery("select.image-picker.show-labels").imagepicker({
+                  hide_select:  false,
+                        show_label:   true,
+                            });
+
+    jQuery("select.image-picker.limit_callback").imagepicker({
+                  limit_reached:  function(){alert('We are full!')},
+                        hide_select:    false
+                            });
+
+    var container = jQuery("select.image-picker.masonry").next("ul.thumbnails");
+        container.imagesLoaded(function(){
+                      container.masonry({
+                                  itemSelector:   "li",
+                                        });
+                          });
+  </script>
+
 {% endblock %}

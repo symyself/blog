@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>enjoy01 - change password</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+	 <link rel="stylesheet" type="text/css" href="/static/image-picker/image-picker.css">                
+   <script src="/static/image-picker/image-picker.js" type="text/javascript"></script>
+  </head>
+  <body>
+    
+<div class="navbar navbar-inverse" role="navigation">
+        <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                         <span class="sr-only">Toggle navigation</span>
+                         <span class="icon-bar"></span>
+                         <span class="icon-bar"></span>
+                         <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="/">enjoy01</a>
+                </div>
+                 <div class="navbar-collapse collapse">
+                     <ul class="nav navbar-nav">
+                     <li><a href="/">Home</a></li>
+                     </ul>
+					 
+							 <ul class="nav navbar-nav pull-right">
+							 <li><a href="/auth/logout">LogOut</a></li>
+							 </ul>
+							 <ul class="nav navbar-nav pull-right">
+                                 <li><a href="/user/songyang">songyang</a></li>
+							 </ul>
+							 <ul class="nav navbar-nav pull-right">
+                                 <li><img class="img-rounded profile-thumbnail" src="/static/user_head/no.jpeg"  height="50" width="50"></li>
+							 </ul>
+					 
+                 </div>
+        </div>
+</div>
+
+
+    
+
+    <div class="container">
+        
+        
+<div class="page-header" style="width:300px;float:left;margin:0px auto;" >
+    <h2>修改个人信息</h2>
+    <select class="image-picker">
+        <option data-img-src="/static/user_head/0884eaba68735afe9f0a41675676c6d6.jpeg" value="1">  0884eaba68735afe9f0a41675676c6d6.jpeg  </option>
+        <option data-img-src="/static/user_head/15c16dca753e02f88d24a8e768ab51ca.jpeg" value="2">  15c16dca753e02f88d24a8e768ab51ca.jpeg  </option>
+        <option data-img-src="/static/user_head/314a47601ef6514ae02c928c6c8b3baf.jpeg" value="3">  314a47601ef6514ae02c928c6c8b3baf.jpeg  </option>
+        <option data-img-src="/static/user_head/560317b58751214e51a617d72c72ea90.jpeg" value="4">  560317b58751214e51a617d72c72ea90.jpeg  </option>
+        <option data-img-src="/static/user_head/9de177c8dcf7f60baa155b2247bd1c22.jpeg" value="5">  9de177c8dcf7f60baa155b2247bd1c22.jpeg  </option>
+        <option data-img-src="/static/user_head/c523b43d258172a002de82dd4a3d4ad2.jpeg" value="6">  c523b43d258172a002de82dd4a3d4ad2.jpeg  </option>
+        <option data-img-src="/static/user_head/ccdb254542bff3e0477b88b9f4a2c593.jpeg" value="7">  ccdb254542bff3e0477b88b9f4a2c593.jpeg  </option>
+        <option data-img-src="/static/user_head/e84ee95856aa152979889dd6ee35191d.jpeg" value="8">  e84ee95856aa152979889dd6ee35191d.jpeg  </option>
+        <option data-img-src="/static/user_head/ec580cdbde25a148eaf381e6a633e1b4.jpeg" value="9">  ec580cdbde25a148eaf381e6a633e1b4.jpeg  </option>
+        <option data-img-src="/static/user_head/no.jpeg" value="10">  no.jpeg  </option>
+    </select>
+
+<form action="" method="post"
+  class="form" role="form">
+  <div style="display:none;"><input id="csrf_token" name="csrf_token" type="hidden" value="1449247003##1353ce24900bac5301f87409ad76a111c09ad12b"></div>
+  
+    
+    
+
+
+
+
+<div class="form-group "><label class="control-label" for="location">坐标</label>
+        
+          <input class="form-control" id="location" name="location" type="text" value="中国">
+        
+  </div>
+
+
+    
+
+
+
+
+<div class="form-group "><label class="control-label" for="about">自我介绍</label>
+        
+          <textarea class="form-control" id="about" name="about">我是一个粉刷匠 耍了房顶又刷墙</textarea>
+        
+  </div>
+
+
+    
+
+
+
+
+
+  
+
+  
+  
+
+
+    <input class="btn btn-default" id="submit" name="submit" type="submit" value="确定">
+  
+
+
+
+
+
+</form>
+</div>
+
+<script type="text/javascript">
+     $("select").data('picker');
+</script>
+
+    </div>
+
+
+
+    
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js"></script>
+  </body>
+</html>
