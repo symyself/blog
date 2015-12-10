@@ -49,6 +49,40 @@ class Role( db.Model ):
             db.session.add( role)
         db.session.commit()
 
+class Post(db.Model):
+    '''博客文章
+    '''
+    __tablename__ = 'blog_post'
+    id = db.Column( db.Integer ,primary_key=True)
+    title = db.Column( db.String(128),nullable=False)
+    alias = db.Column( db.String(128),unique=True)
+    body = db.Column( db.Text ,nullable=False)
+    create_time = db.Column( db.DateTime , default=datetime.now )
+    last_change_time = db.Column( db.DateTime , default=datetime.now )
+    author_id = db.Column(db.Integer,db.ForeignKey( 'blog_user.id' ))
+    
+    @staticmethod
+    def generate_fake(count=100):
+        '''
+        快速添加虚拟文章
+        '''
+        from random import seed,choice
+        import forgery_py
+        seed()
+        all_user_id=[ x.id for x in db.session.query(User.id).all() ]
+        for i in range( count ):
+            u=User.query.filter_by( id= choice( all_user_id ) ).first()
+            title = forgery_py.lorem_ipsum.sentence()
+            if len(title) >127:
+                title=title[:128]
+            p=Post(title = title,
+                    body = forgery_py.lorem_ipsum.sentences(3),
+                    author = u )
+            db.session.add(p)
+            db.session.commit()
+            db.session.rollback()
+
+
 class User(UserMixin,db.Model):
     #__tablename__ = current_app.config['TABLE_PREFIX']+'user'
     __tablename__ = 'blog_user'
@@ -65,12 +99,14 @@ class User(UserMixin,db.Model):
     #注册后需要邮件确认
     confirmed =  db.Column( db.Boolean , default=False )
     head_img = db.Column( db.String(64) , default='no.jpeg')
+    posts = db.relationship( 'Post',backref='author',lazy='dynamic')
 
     def __init__(self,username,password,email,**kwargs):
         super( User,self).__init__( **kwargs )
         self.username = username
         self.password = password
         self.email  = email
+        self.head_img = self.get_random_head_img()
         #self.register_date = datetime.now()
         #为新用户定义角色
         if self.email == current_app.config['ADMIN_EMAIL']:
@@ -80,6 +116,28 @@ class User(UserMixin,db.Model):
 
     def __repr__(self):
         return '<User %s %r>' %(self.username,self.register_date)
+
+    @staticmethod
+    def generate_fake(count=100):
+        '''
+        快速添加虚拟用户
+        '''
+        from sqlalchemy.exc import IntegrityError
+        from random import seed
+        import forgery_py
+        seed()
+        for i in range( count ):
+            u = User( username=forgery_py.internet.user_name(),
+                    password=forgery_py.lorem_ipsum.word(),
+                    email=forgery_py.internet.email_address(),
+                    location=forgery_py.address.city(),
+                    about = forgery_py.lorem_ipsum.sentence()
+                    )
+            db.session.add(u)
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
 
     @property
     def password(self):
@@ -157,6 +215,22 @@ class User(UserMixin,db.Model):
         '''
         img='user_head/'+self.head_img
         return url_for('static',filename=img)
+
+    def get_random_head_img( self):
+        '''
+        get a random image file name
+        '''
+        from random import choice
+        all_head_img=["0884eaba68735afe9f0a41675676c6d6.jpeg",
+                "15c16dca753e02f88d24a8e768ab51ca.jpeg",
+                "314a47601ef6514ae02c928c6c8b3baf.jpeg",
+                "560317b58751214e51a617d72c72ea90.jpeg",
+                "9de177c8dcf7f60baa155b2247bd1c22.jpeg",
+                "c523b43d258172a002de82dd4a3d4ad2.jpeg",
+                "ccdb254542bff3e0477b88b9f4a2c593.jpeg",
+                "e84ee95856aa152979889dd6ee35191d.jpeg",
+                "ec580cdbde25a148eaf381e6a633e1b4.jpeg"]
+        return choice( all_head_img )
 
     @staticmethod
     def get_user_from_token( token):

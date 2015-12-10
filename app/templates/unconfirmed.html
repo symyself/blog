@@ -3,6 +3,7 @@
 {% block page_content %}
 <div class="page-header">
     <h2> Dear {{ current_user.username }}:</h2> 
-    <h3>        请先登录你的邮件{{ current_user.email }}进行账号确认<a href="{{ url_for('auth.resend_confirm_email') }}">重发邮件<a></h3>
+    <h3>        您还没有进行邮件确认，请先登录你的邮件{{ current_user.email }}进行账号确认</h3>
+    <h4><a href="{{ url_for('auth.resend_confirm_email') }}">    重发邮件<a></h4>
 </div>
 {% endblock %}

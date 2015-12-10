@@ -2,7 +2,7 @@
 {% block title %}enjoy01 - userinfo{% endblock %}
 {% block page_content %}
 <div class="page-header">
-        <img class="img-rounded profile-thumbnail" src="{{ user.image_url() }}"  height="100" width="100">
+        <img class="img-rounded" src="{{ user.image_url() }}"  height="100" width="100">
         {% if user == current_user %}
         <h2> {{ user.username }} <a href="{{ url_for('auth.change_password') }}">修改密码</a></h2>
         <h3>邮件:    {{ user.email }}  <a href="{{ url_for('auth.change_email_request') }}">修改邮件</a></h3>
@@ -23,4 +23,7 @@
             {% endif %}
         {% endif %}
         <h4>注册时间:{{ user.register_date }}</h4>
+</dev>
+<h3>Posts by {{ user.username }}</h3>
+{% include '_posts.html' %}
 {% endblock %}

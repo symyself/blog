@@ -11,6 +11,7 @@ Flask-Moment==0.5.1
 Flask-Script==2.0.5
 Flask-SQLAlchemy==2.1
 Flask-WTF==0.12
+ForgeryPy==0.1
 ipython==4.0.0
 ipython-genutils==0.1.0
 itsdangerous==0.24

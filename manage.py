@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #! -*- coding: UTF-8 -*-
 from app import create_app, db
-from app.models import User,Role
+from app.models import User,Role,Post
 from flask.ext.script import Manager,Shell
 from flask.ext.migrate import Migrate,MigrateCommand
 
@@ -17,7 +17,7 @@ def make_shell_context():
     若想把对象添加到导入列表中， 我们要为 shell 命令注册一个 make_context 回调函数，如
     示例 5-7 所示。
     '''
-    return dict(app=app,db=db,User=User,Role=Role)
+    return dict(app=app,db=db,User=User,Role=Role,Post=Post)
 manager.add_command('shell',Shell(make_context=make_shell_context))
 
 '''

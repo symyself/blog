@@ -130,3 +130,8 @@ class edit_profile_form(Form):
     ##    self.location.data= user.location
     ##    self.about.data = user.about
     ##    super( edit_profile_form,self).__init__( **kwargs )
+
+class post_form(Form):
+    title = StringField(u'title',validators=[Required(),Length(3,128)])
+    body = TextAreaField( u'body',validators=[Required()])
+    submit = SubmitField(u'确定')
