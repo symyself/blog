@@ -5,6 +5,8 @@ from flask import current_app,url_for
 from datetime import datetime
 from flask.ext.login import UserMixin,AnonymousUserMixin
 from . import db, login_manager
+from markdown import markdown
+import bleach
 
 class Permission():
     FOLLOW=0x01 #可关注别人
@@ -57,10 +59,12 @@ class Post(db.Model):
     title = db.Column( db.String(128),nullable=False)
     alias = db.Column( db.String(128),unique=True)
     body = db.Column( db.Text ,nullable=False)
+    #将markdown格式的body转换为html存放
+    body_html = db.Column( db.Text )
     create_time = db.Column( db.DateTime , default=datetime.now )
     last_change_time = db.Column( db.DateTime , default=datetime.now )
     author_id = db.Column(db.Integer,db.ForeignKey( 'blog_user.id' ))
-    
+
     @staticmethod
     def generate_fake(count=100):
         '''
@@ -81,6 +85,25 @@ class Post(db.Model):
             db.session.add(p)
             db.session.commit()
             db.session.rollback()
+
+    @staticmethod
+    def on_changed_body(target,value,oldvalue,initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code',
+                'em', 'i', 'li', 'ol', 'pre', 'strong', 'ul',
+                'h1', 'h2', 'h3', 'p']
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value,output_format='html'),
+            tags = allowed_tags,
+            strip = True )
+            )
+'''
+on_changed_body 函数注册在 body 字段上，是 SQLAlchemy“ set”事件的监听程序，这意
+味着只要这个类实例的 body 字段设了新值，函数就会自动被调用。 on_changed_body 函数
+把 body 字段中的文本渲染成 HTML 格式，结果保存在 body_html 中，自动且高效地完成
+Markdown 文本到 HTML 的转换。
+'''
+db.event.listen(Post.body,'set',Post.on_changed_body)
+
 
 
 class User(UserMixin,db.Model):

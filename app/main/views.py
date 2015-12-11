@@ -5,6 +5,7 @@ from . import main
 from ..models import Permission,User,Post
 from ..decorators import admin_required,permission_required
 from ..my_forms import user_forms
+from datetime import datetime
 from .. import db
 
 @main.route('/', methods=['GET', 'POST'])
@@ -85,3 +86,28 @@ def permission_failed(e):
 @main.app_context_processor
 def inject_permissions():
      return dict(Permission=Permission)
+
+@main.route('/get_post_<id>.html')
+def get_post(id):
+    post = Post.query.get_or_404(id)
+    return render_template( 'post.html',posts=[post] )
+
+
+@main.route("/edit_post_<id>.html",methods=['GET','POST'])
+@login_required
+def edit_post(id):
+    form = user_forms.post_form()
+    post = Post.query.get_or_404(id)
+    if current_user != post.author :
+        return render_template('info.html',info = 'only author can edit it!!')
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.body = form.body.data
+        post.last_change_time = datetime.now()
+        db.session.add( post )
+        db.session.commit()
+        return redirect( url_for(".get_post",id=id))
+    form.title.data = post.title
+    form.body.data = post.body
+    return render_template('edit_post.html',form=form)
+

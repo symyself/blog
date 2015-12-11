@@ -8,6 +8,7 @@ from flask.ext.bootstrap import Bootstrap
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.mail import Mail
 from flask.ext.login import LoginManager
+from flask.ext.pagedown import PageDown
 from config import config
 
 bootstrap = Bootstrap()
@@ -24,6 +25,11 @@ login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.login_view = 'auth.login'
 
+'''
+Flask-PageDown 扩展定义了一个 PageDownField 类，这个类和 WTForms 中的 TextAreaField
+接口一致。使用 PageDownField 字段之前，先要初始化扩展
+'''
+pagedown=PageDown()
 
 def create_app(config_name):
     app=Flask(__name__)
@@ -34,6 +40,7 @@ def create_app(config_name):
     db.init_app(app)
     mail.init_app(app)
     login_manager.init_app( app )
+    pagedown.init_app( app )
 
     # 附加路由和自定义的错误页面 (???)
     # 注册蓝本

@@ -6,6 +6,7 @@ from wtforms import ValidationError
 from ..models import User
 from flask import session
 from flask.ext.login import current_user
+from flask.ext.pagedown.fields import PageDownField
 
 '''
 from wtforms import Form, BooleanField, TextField, PasswordField, validators, StringField, SubmitField
@@ -133,5 +134,6 @@ class edit_profile_form(Form):
 
 class post_form(Form):
     title = StringField(u'title',validators=[Required(),Length(3,128)])
-    body = TextAreaField( u'body',validators=[Required()])
+    #body = TextAreaField( u'body',validators=[Required()])
+    body = PageDownField( u'body',validators=[Required()])
     submit = SubmitField(u'确定')

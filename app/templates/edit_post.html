@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block scripts %}
+{{ super() }}
+{{ pagedown.include_pagedown() }}
+{% endblock %}
+
+{% block title %}enjoy01 edit post{% endblock %}
+{% block page_content %}
+            {{ wtf.quick_form(form) }}
+{% endblock %}

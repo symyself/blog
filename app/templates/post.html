@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% import "_macros.html" as macros %}
+
+{% block title %}enjoy01 post{% endblock %}
+{% block page_content %}
+<div style="text-align: center;font-size: 250%;">
+    <p>{{ posts[0].title }} </p>
+</div>
+{% include '_posts.html' %}
+{% endblock %}

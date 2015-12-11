@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {% import "_macros.html" as macros %}
+
+{% block scripts %}
+{{ super() }}
+{{ pagedown.include_pagedown() }}
+{% endblock %}
+
 {% block title %}enjoy01 index{% endblock %}
 {% block page_content %}
     <div class="page-header">
@@ -9,7 +15,7 @@
 
     <!-- div class="col-md-4" -->
     <div >
-        {% if current_user.check_permission(Permission.WRITE_ARTICLES) %}
+        {% if current_user.check_permission(Permission.WRITE_ARTICLES) and form %}
             {{ wtf.quick_form(form) }}
         {% endif %}
     </div>
