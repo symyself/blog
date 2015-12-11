@@ -111,3 +111,22 @@ def edit_post(id):
     form.body.data = post.body
     return render_template('edit_post.html',form=form)
 
+@main.route("/follow_<username>.html")
+@login_required
+def follow(username):
+    return render_template('info.html',info = '关注'+username+'? 待完善')
+
+@main.route("/unfollow_<username>.html")
+@login_required
+def unfollow(username):
+    return render_template('info.html',info = '取消关注'+username+'? 待完善')
+
+@main.route("/followers_<username>.html")
+@login_required
+def followers(username):
+    return render_template('info.html',info = '获得关注了'+username+'的? 待完善')
+
+@main.route("/followed_by_<username>.html")
+@login_required
+def followed_by(username):
+    return render_template('info.html',info = '获得被'+username+'关注的? 待完善')

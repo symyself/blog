@@ -106,6 +106,17 @@ db.event.listen(Post.body,'set',Post.on_changed_body)
 
 
 
+'''
+用户关注
+'''
+class Follow(db.Model):
+    __tablename__ = 'blog_follows'
+    follower_id = db.Column(db.Integer, db.ForeignKey('blog_user.id'),
+            primary_key=True)
+    followed_id = db.Column(db.Integer, db.ForeignKey('blog_user.id'),
+            primary_key=True)
+    follow_time = db.Column(db.DateTime, default=datetime.now)
+
 class User(UserMixin,db.Model):
     #__tablename__ = current_app.config['TABLE_PREFIX']+'user'
     __tablename__ = 'blog_user'
@@ -123,6 +134,19 @@ class User(UserMixin,db.Model):
     confirmed =  db.Column( db.Boolean , default=False )
     head_img = db.Column( db.String(64) , default='no.jpeg')
     posts = db.relationship( 'Post',backref='author',lazy='dynamic')
+
+    #我关注的用户
+    followed = db.relationship('Follow',
+            foreign_keys=[Follow.follower_id],
+            backref=db.backref('follower', lazy='joined'),
+            lazy='dynamic',
+            cascade='all, delete-orphan')
+    #关注我的用户
+    followers = db.relationship('Follow',
+            foreign_keys=[Follow.followed_id],
+            backref=db.backref('followed', lazy='joined'),
+            lazy='dynamic',
+            cascade='all, delete-orphan')
 
     def __init__(self,username,password,email,**kwargs):
         super( User,self).__init__( **kwargs )
@@ -267,6 +291,24 @@ class User(UserMixin,db.Model):
             return None
         user = User.query.filter_by( username=username ).first()
         return user
+
+    def follow(self, user):
+        if not self.is_following(user):
+            f = Follow(follower=self, followed=user)
+            db.session.add(f)
+
+    def unfollow(self, user):
+        f = self.followed.filter_by(followed_id=user.id).first()
+        if f:
+            db.session.delete(f)
+
+    def is_following(self, user):
+        return self.followed.filter_by(
+                followed_id=user.id).first() is not None
+
+    def is_followed_by(self, user):
+        return self.followers.filter_by(
+                follower_id=user.id).first() is not None
 
 '''
 出于一致性考虑，我们还定义了 AnonymousUser 类，并实现了 check_permission() 方法和
