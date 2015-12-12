@@ -114,19 +114,33 @@ def edit_post(id):
 @main.route("/follow_<username>.html")
 @login_required
 def follow(username):
-    return render_template('info.html',info = '关注'+username+'? 待完善')
+    target_user = User.query.filter_by( username=username).first()
+    if target_user is not None and current_user.is_following( target_user) is False:
+        current_user.follow( target_user )
+    return redirect( url_for('.user',name=username))
+    #return render_template('info.html',info = '关注'+username+'? 待完善')
 
 @main.route("/unfollow_<username>.html")
 @login_required
 def unfollow(username):
-    return render_template('info.html',info = '取消关注'+username+'? 待完善')
+    target_user = User.query.filter_by( username=username).first()
+    if target_user is not None and current_user.is_following( target_user) is True:
+        current_user.unfollow( target_user )
+    return redirect( url_for('.user',name=username))
+    #return render_template('info.html',info = '取消关注'+username+'? 待完善')
 
 @main.route("/followers_<username>.html")
 @login_required
 def followers(username):
-    return render_template('info.html',info = '获得关注了'+username+'的? 待完善')
+    target_user = User.query.filter_by( username=username).first()
+    all_followers =[ f.follower for f in target_user.followers.all() ]
+    return render_template('user.html',user = target_user,followers = all_followers )
+    #return render_template('info.html',info = '获得关注了'+username+'的? 待完善')
 
 @main.route("/followed_by_<username>.html")
 @login_required
 def followed_by(username):
-    return render_template('info.html',info = '获得被'+username+'关注的? 待完善')
+    target_user = User.query.filter_by( username=username).first()
+    all_followed =[ f.followed for f in target_user.followed.all() ]
+    return render_template('user.html',user = target_user,followed = all_followed )
+    #return render_template('info.html',info = '获得被'+username+'关注的? 待完善')

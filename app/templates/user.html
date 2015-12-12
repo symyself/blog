@@ -47,6 +47,23 @@
             | <span class="label label-default">{{ user.username }} 关注了你哦！！！</span>
         {% endif %}
 </dev>
+{% if followers %}
+    <h3>他们都关注了{{ user.username }}哦:</h3>
+    {% for follower in followers %}
+        <a href="{{ url_for('.user', name=follower.username) }}">
+            {{ follower.username }}
+        </a>
+    {% endfor %}
+{% elif followed %}
+    <h3>{{ user.username }}关注了他们哦:</h3>
+    {% for followed_user in followed %}
+        <a href="{{ url_for('.user', name=followed_user.username) }}">
+            {{ followed_user.username }}
+        </a>
+    {% endfor %}
+{% endif %}
+{% if posts %}
 <h3>Posts by {{ user.username }}</h3>
 {% include '_posts.html' %}
+{% endif %}
 {% endblock %}
