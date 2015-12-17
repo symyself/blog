@@ -82,7 +82,8 @@ def login():
         if request.args.get('next'):
             return redirect(request.args.get('next'))
         else:
-            return render_template("welcome.html")
+            return redirect(url_for('main.get_followed_posts'))
+            #return render_template("welcome.html")
     else:
         #return redirect(request.args.get('next') or url_for('main.index'))
         return render_template("login2.html", form=login_form)

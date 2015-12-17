@@ -1,0 +1,37 @@
+<ul class="comments">
+    {% for comment in comments %}
+    <li class="comment">
+        <div class="comment-thumbnail">
+            <a href="{{ url_for('.user', name=comment.author.username) }}">
+                <img class="img-rounded profile-thumbnail" src="{{ comment.author.image_url() }}" width="50" height="50">
+            </a>
+        </div>
+        <div class="comment-content">
+            <div class="comment-date">{{ comment.create_time }}</div>
+            <div class="comment-author"><a href="{{ url_for('.user', name=comment.author.username) }}">{{ comment.author.username }}</a></div>
+            <div class="comment-body">
+                {% if comment.disabled %}
+                    <p><i>This comment has been disabled.</i></p>
+                {% else %}
+                    {% if comment.body_html %}
+                        {{ comment.body_html | safe }}
+                    {% else %}
+                        {{ comment.body }}
+                    {% endif %}
+                {% endif %}
+            </div>
+            {% if moderate %}
+                <br>
+                <div class="comment-footer">
+                <a class="btn btn-danger btn-xs" href="{{ url_for('.delete_comment', id=comment.id, page=page) }}">Delete</a>
+                {% if comment.disabled %}
+                <a class="btn btn-success btn-xs" href="{{ url_for('.enable_comment', id=comment.id, page=page) }}">Enable</a>
+                {% else %}
+                <a class="btn btn-warning btn-xs" href="{{ url_for('.disable_comment', id=comment.id, page=page) }}">Disable</a>
+                {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </li>
+    {% endfor %}
+</ul>

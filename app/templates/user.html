@@ -2,19 +2,26 @@
 {% block title %}enjoy01 - userinfo{% endblock %}
 {% block page_content %}
 <div class="page-header">
-        <img class="img-rounded" src="{{ user.image_url() }}"  height="100" width="100">
+        {% if user == current_user %}
+            <img class="img-rounded" src="{{ user.image_url() }}"  height="100" width="100" alt="img error" onclick="this.src='{{ url_for('main.change_head_img') }}'+'?'+Math.random();">
+        {% else %}
+            <img class="img-rounded" src="{{ user.image_url() }}"  height="100" width="100" alt="img error">
+        {% endif %}
+
         {% if user == current_user %}
         <h2> {{ user.username }} <a href="{{ url_for('auth.change_password') }}">修改密码</a></h2>
         <h3>邮件:    {{ user.email }}  <a href="{{ url_for('auth.change_email_request') }}">修改邮件</a></h3>
         {% else %}
         <h2> {{ user.username }}</h2>
         {% endif %}
+
         {% if user.location %}
         <h3>坐标:    {{ user.location }}</h3>
         {% endif %}
         {% if user.about %}
         <h3>自我介绍:{{ user.about }}</h3>
         {% endif %}
+
         {% if user == current_user %}
             {% if not user.location or not user.about %}
                 <a href="{{ url_for('main.edit_profile') }}">添加信息</a>
@@ -22,7 +29,15 @@
                 <a href="{{ url_for('main.edit_profile') }}">修改信息</a>
             {% endif %}
         {% endif %}
+
         <h4>注册时间:{{ user.register_date }}</h4>
+
+        {% if user==current_user and user.check_permission(Permission.MODERATE_COMMENTS)%}
+            <a href="{{ url_for('.moderate_comment') }}">
+                管理评论
+            </a>
+        {% endif %}
+        <br>
 
         {% if current_user.check_permission(Permission.FOLLOW) and user != current_user %}
             {% if not current_user.is_following(user) %}
@@ -35,11 +50,11 @@
         {% endif %}
 
         <a href="{{ url_for('.followers', username=user.username) }}">
-            被关注: <span class="badge">{{ user.followers.count() }}</span>
+            被关注: <span class="badge">{{ user.followers.count() - 1 }}</span>
         </a>
 
         <a href="{{ url_for('.followed_by', username=user.username) }}">
-            关注: <span class="badge">{{ user.followed.count() }}</span>
+            关注: <span class="badge">{{ user.followed.count() - 1 }}</span>
         </a>
 
         {% if current_user.is_authenticated and user != current_user and
@@ -48,20 +63,29 @@
         {% endif %}
 </dev>
 {% if followers %}
-    <h3>他们都关注了{{ user.username }}哦:</h3>
+    {% if user == current_user %}
+        <h3>他们都关注了我:</h3>
+    {% else %}
+        <h3>他们都关注了{{ user.username }}:</h3>
+    {% endif %}
     {% for follower in followers %}
         <a href="{{ url_for('.user', name=follower.username) }}">
             {{ follower.username }}
         </a>
     {% endfor %}
 {% elif followed %}
-    <h3>{{ user.username }}关注了他们哦:</h3>
+    {% if user == current_user %}
+        <h3>我关注的朋友:</h3>
+    {% else %}
+        <h3>{{ user.username }}关注了他们:</h3>
+    {% endif %}
     {% for followed_user in followed %}
         <a href="{{ url_for('.user', name=followed_user.username) }}">
             {{ followed_user.username }}
         </a>
     {% endfor %}
 {% endif %}
+
 {% if posts %}
 <h3>Posts by {{ user.username }}</h3>
 {% include '_posts.html' %}

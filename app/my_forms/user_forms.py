@@ -137,3 +137,8 @@ class post_form(Form):
     #body = TextAreaField( u'body',validators=[Required()])
     body = PageDownField( u'body',validators=[Required()])
     submit = SubmitField(u'确定')
+
+class comment_form(Form):
+    #body = TextAreaField( u'body',validators=[Required()])
+    body = PageDownField( u'评论',validators=[Required()])
+    submit = SubmitField(u'确定')

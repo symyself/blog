@@ -9,6 +9,7 @@
                     <div class="post-date">{{ post.create_time }}</div>
                     <div class="post-author"><a href="{{ url_for('.user', name=post.author.username) }}">{{ post.author.username }}</a></div>
                     <div class="post-body">
+                        {{ post.title }}
                         {% if post.body_html %}
                             {{ post.body_html | safe }}
                         {% else %}
@@ -23,6 +24,9 @@
                         {% endif %}
                         <a href="{{ url_for('.get_post', id=post.id) }}">
                             <span class="label label-default">Permalink</span>
+                        </a>
+                        <a href="{{ url_for('.get_post', id=post.id) }}#comments">
+                            <span class="label label-primary">评论({{ post.comments.count() }})</span>
                         </a>
                     </div>
                 </div>

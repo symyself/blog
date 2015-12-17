@@ -7,26 +7,19 @@
 {{ pagedown.include_pagedown() }}
 {% endblock %}
 
-{% block title %}enjoy01 post{% endblock %}
+{% block title %}enjoy01 moderate_comment{% endblock %}
 {% block page_content %}
-<div style="text-align: center;font-size: 250%;">
-    <p>{{ posts[0].title }} </p>
-</div>
-{% include '_posts.html' %}
-
-{% if current_user.check_permission(Permission.COMMENT) %}
-    {{ wtf.quick_form(form) }}
-{% endif %}
 
 {% if comments %}
 <h3 id="comments">Comments</h3>
 {% endif %}
 
+{% set moderate=True %}
 {% include '_comments.html' %}
 
 {% if pagination %}
     <div class="pagination">
-            {{ macros.pagination_widget(pagination,'.get_post',id=posts[0].id) }}
+            {{ macros.pagination_widget(pagination,'.moderate_comment',) }}
     </div>
 {% endif %}
 {% endblock %}

@@ -64,6 +64,7 @@ class Post(db.Model):
     create_time = db.Column( db.DateTime , default=datetime.now )
     last_change_time = db.Column( db.DateTime , default=datetime.now )
     author_id = db.Column(db.Integer,db.ForeignKey( 'blog_user.id' ))
+    comments = db.relationship( 'Comment',backref='post',lazy='dynamic')
 
     @staticmethod
     def generate_fake(count=100):
@@ -134,6 +135,7 @@ class User(UserMixin,db.Model):
     confirmed =  db.Column( db.Boolean , default=False )
     head_img = db.Column( db.String(64) , default='no.jpeg')
     posts = db.relationship( 'Post',backref='author',lazy='dynamic')
+    comments = db.relationship( 'Comment',backref='author',lazy='dynamic')
 
     #我关注的用户
     followed = db.relationship('Follow',
@@ -160,6 +162,8 @@ class User(UserMixin,db.Model):
             self.role = Role.query.filter_by( rolename = 'Administrator' ).first()
         else:
             self.role = Role.query.filter_by( default = True ).first()
+        #关注自己
+        self.follow(self)
 
     def __repr__(self):
         return '<User %s %r>' %(self.username,self.register_date)
@@ -310,6 +314,27 @@ class User(UserMixin,db.Model):
         return self.followers.filter_by(
                 follower_id=user.id).first() is not None
 
+    @property
+    def followed_posts( self ):
+        '''
+        返回用户所有关注的人的文章
+        '''
+        return Post.query.join( Follow ,Follow.followed_id == Post.author_id)\
+                .filter( Follow.follower_id == self.id)\
+                .order_by( Post.last_change_time.desc() )
+
+    @staticmethod
+    def add_follow_self():
+        '''
+        所有用户自己关注自己
+        '''
+        for u in User.query.all():
+            if not u.is_following( u ):
+                u.follow( u )
+                db.session.add( u )
+        db.session.commit()
+##class end
+
 '''
 出于一致性考虑，我们还定义了 AnonymousUser 类，并实现了 check_permission() 方法和
 is_administrator() 方法。这个对象继承自 Flask-Login 中的 AnonymousUserMixin
@@ -331,4 +356,37 @@ Flask-Login 要求程序实现一个回调函数，使用指定的标识符加�
 @login_manager.user_loader
 def load_user( user_id):
     return User.query.get( int( user_id) )
+
+
+class Comment( db.Model ):
+    __tablename__ = 'blog_comment'
+    '''博客评论
+    '''
+    id = db.Column( db.Integer ,primary_key=True)
+    body = db.Column( db.Text ,nullable=False)
+    #将markdown格式的body转换为html存放
+    body_html = db.Column( db.Text )
+    create_time = db.Column( db.DateTime , default=datetime.now )
+    author_id = db.Column(db.Integer,db.ForeignKey( 'blog_user.id' ))
+    post_id = db.Column( db.Integer,db.ForeignKey('blog_post.id'))
+    disabled =  db.Column( db.Boolean , default=False )
+    audited =  db.Column( db.Boolean , default=False )
+
+
+    @staticmethod
+    def on_changed_body(target,value,oldvalue,initiator):
+        allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code',
+                'em', 'i', 'strong', 'p']
+        target.body_html = bleach.linkify(bleach.clean(
+            markdown(value,output_format='html'),
+            tags = allowed_tags,
+            strip = True )
+            )
+'''
+on_changed_body 函数注册在 body 字段上，是 SQLAlchemy“ set”事件的监听程序，这意
+味着只要这个类实例的 body 字段设了新值，函数就会自动被调用。 on_changed_body 函数
+把 body 字段中的文本渲染成 HTML 格式，结果保存在 body_html 中，自动且高效地完成
+Markdown 文本到 HTML 的转换。
+'''
+db.event.listen(Comment.body,'set',Comment.on_changed_body)
 
