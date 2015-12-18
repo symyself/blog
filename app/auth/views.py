@@ -5,7 +5,7 @@ from flask import redirect
 from flask import abort, flash, url_for
 from flask.ext.login import login_required,logout_user,login_user,current_user
 from ..my_forms import user_forms
-from ..models import User as user
+from ..models import User
 from ..email import send_email
 from .. import db
 from . import auth
@@ -67,7 +67,7 @@ def login():
     if login_form.validate_on_submit():
         # 改为在 login_form 里面对用户名，密码，验证码验证
         # 如果 validate_on_submit() 为True,则用户名，密码，验证码全正确，就不需要在这里验证了
-        user_for_login=user.query.filter_by( username=request.form.get('username')).first()
+        user_for_login=User.query.filter_by( username=request.form.get('username')).first()
 
         '''
         login_user() 函数的参数是要登录的用户，以及可选的“记住我”布

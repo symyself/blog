@@ -225,6 +225,25 @@ class User(UserMixin,db.Model):
         db.session.add( self )
         return True
 
+    def generate_auth_token( self,expiration=300):
+        '''
+        generate token for api auth
+        '''
+        s = Serializer( current_app.config['SECRET_KEY'],expiration )
+        return s.dumps( {'id':self.id} )
+
+    @staticmethod
+    def verify_auth_token(token):
+        '''
+        verify token for api auth
+        '''
+        s = Serializer( current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads( token )
+        except:
+            return None
+        return User.query.get( data['id'] )
+
     def reset_password( self,new_password):
         try:
             self.password = new_password
