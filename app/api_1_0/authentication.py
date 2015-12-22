@@ -17,6 +17,7 @@ auth = HTTPBasicAuth()
 def verify_password(username_or_token,password):
     if username_or_token == '':
         g.current_user = AnonymousUser()
+        return False
         return True
 
     if password == '':
@@ -41,15 +42,14 @@ def before_request():
     if not g.current_user.is_anonymous and not g.current_user.confirmed:
         return errors.forbidden('not confirmed')
 
-
+'''
+如果认证密令不正确，服务器向客户端返回 401 错误。默认情况下， Flask-HTTPAuth 自
+动生成这个状态码， 但为了和 API 返回的其他错误保持一致，我们可以自定义这个错误响
+应
+'''
 @auth.error_handler
 def auth_error():
     return errors.unauthorized('Invalid credentials')
-
-@api.route('/posts/')
-@auth.login_required
-def get_posts():
-    return errors.forbidden('not confirmed')
 
 @api.route('/token/')
 def get_token():

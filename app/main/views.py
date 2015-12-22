@@ -1,5 +1,5 @@
 # coding: utf-8
-from flask import render_template,flash,abort,redirect,url_for,request
+from flask import render_template,flash,abort,redirect,url_for,request,abort
 from flask.ext.login import current_user,login_required
 from . import main
 from ..models import Permission,User,Post,Comment
@@ -78,9 +78,6 @@ def edit_profile():
         form.about.data = current_user.about
         return render_template("edit_profile.html", form=form)
 
-@main.app_errorhandler(403)
-def permission_failed(e):
-    return render_template('info.html',info = 'permission failed'),403
 
 
 '''

@@ -66,6 +66,35 @@ class Post(db.Model):
     author_id = db.Column(db.Integer,db.ForeignKey( 'blog_user.id' ))
     comments = db.relationship( 'Comment',backref='post',lazy='dynamic')
 
+    def to_json( self ):
+        '''
+        把文章转换成 JSON 格式的序列化字典
+        '''
+        json_post={'url':url_for('api.get_post',id=self.id,_external=True),
+                'title':self.title,
+                'body':self.body,
+                'body_html':self.body_html,
+                'create_time':self.create_time,
+                'last_change_time':self.last_change_time,
+                'author':url_for('api.get_user',id=self.author.id,_external=True),
+                'comments':url_for('api.get_post_comments',id=self.id,_external=True),
+                'comments_count':self.comments.count()
+                }
+        return json_post
+
+    @staticmethod
+    def from_json( json_post ):
+        '''
+        从 JSON 格式数据创建一篇博客文章
+        '''
+        body = json_post.get('body')
+        title = json_post.get('title')
+        if body is None or body == '':
+            raise ValidationError('post does not have a body')
+        if title is None or title == '':
+            raise ValidationError('post does not have a title')
+        return Post( body=body,title=title )
+
     @staticmethod
     def generate_fake(count=100):
         '''
@@ -167,6 +196,22 @@ class User(UserMixin,db.Model):
 
     def __repr__(self):
         return '<User %s %r>' %(self.username,self.register_date)
+
+    def to_json(self):
+        '''
+        把用户转换成 JSON 格式的序列化字典
+        '''
+        json_user={
+                'url':url_for('api.get_user',id=self.id,_external=True),
+                'username':self.username,
+                'register_date':self.register_date,
+                'last_login_date':self.last_login_date,
+                'head_img':self.image_url(_external=True),
+                'posts':url_for('api.get_user_posts',id=self.id,_external=True),
+                'posts_count':self.posts.count(),
+                'followed_posts':url_for('api.get_user_followed_posts',id=self.id,_external=True),
+                }
+        return json_user
 
     @staticmethod
     def generate_fake(count=100):
@@ -279,12 +324,12 @@ class User(UserMixin,db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def image_url( self ):
+    def image_url( self ,_external=False):
         '''
         return head image url for user
         '''
         img='user_head/'+self.head_img
-        return url_for('static',filename=img)
+        return url_for('static',filename=img,_external=_external)
 
     def get_random_head_img( self):
         '''
@@ -391,6 +436,17 @@ class Comment( db.Model ):
     disabled =  db.Column( db.Boolean , default=False )
     audited =  db.Column( db.Boolean , default=False )
 
+    def to_json( self ):
+        '''
+        '''
+        json_comment={
+                'url':url_for('api.get_comment',id=self.id,_external=True),
+                'body':self.body,
+                'body_html':self.body_html,
+                'author':url_for('api.get_user',id=self.author_id,_external=True),
+                'create_time'   :   self.create_time,
+                }
+        return json_comment
 
     @staticmethod
     def on_changed_body(target,value,oldvalue,initiator):
