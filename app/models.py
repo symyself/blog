@@ -6,6 +6,7 @@ from datetime import datetime
 from flask.ext.login import UserMixin,AnonymousUserMixin
 from . import db, login_manager
 from markdown import markdown
+from exceptions import ValidationError
 import bleach
 
 class Permission():
@@ -192,7 +193,8 @@ class User(UserMixin,db.Model):
         else:
             self.role = Role.query.filter_by( default = True ).first()
         #关注自己
-        self.follow(self)
+        #self.follow(self)
+        self.followed.append( Follow( followed=self) )
 
     def __repr__(self):
         return '<User %s %r>' %(self.username,self.register_date)
@@ -360,6 +362,10 @@ class User(UserMixin,db.Model):
         user = User.query.filter_by( username=username ).first()
         return user
 
+    def is_following(self, user):
+        return self.followed.filter_by(
+                followed_id=user.id).first() is not None
+
     def follow(self, user):
         if not self.is_following(user):
             f = Follow(follower=self, followed=user)
@@ -369,10 +375,6 @@ class User(UserMixin,db.Model):
         f = self.followed.filter_by(followed_id=user.id).first()
         if f:
             db.session.delete(f)
-
-    def is_following(self, user):
-        return self.followed.filter_by(
-                followed_id=user.id).first() is not None
 
     def is_followed_by(self, user):
         return self.followers.filter_by(

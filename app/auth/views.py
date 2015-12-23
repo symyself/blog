@@ -118,7 +118,7 @@ def register():
         flash('thanks for registering')
         #print 'register:%s %s %s' %(request.form.get('username'),request.form.get('password'),request.form.get('email'))
         try:
-            new_user = user(request.form.get('username'),
+            new_user = User(request.form.get('username'),
                     request.form.get('password'),
                     request.form.get('email'))
             db.session.add(new_user)
@@ -190,7 +190,7 @@ def reset_password_request():
         return redirect( url_for( 'main.base'))
     form = user_forms.reset_password_email_form()
     if form.validate_on_submit():#在form中验证邮件已经注册
-        reset_user=user.query.filter_by(email=form.email.data).first()
+        reset_user=User.query.filter_by(email=form.email.data).first()
         token= reset_user.generate_reset_password_token()
         send_email(reset_user.email, 'RESET YOUR PASSWORD',
                 'auth/email/reset_password', user=reset_user,token=token)
@@ -205,7 +205,7 @@ def reset_password(token):
     if not current_user.is_anonymous:
         return redirect( url_for( 'main.base'))
     form = user_forms.reset_password_form()
-    reset_user=user.get_user_from_token( token )
+    reset_user=User.get_user_from_token( token )
     if reset_user is None:
         return render_template('info.html',info = 'Error,无效的连接!!!')
     if form.validate_on_submit():

@@ -2,7 +2,9 @@
 #! -*- coding: UTF-8 -*-
 from . import api
 from flask import g,jsonify,request,url_for
-from ..models import Post,Comment
+from ..models import Post,Comment,Permission
+from decorators import permission_required
+from .. import db
 
 '''
 api.get_user
@@ -33,3 +35,13 @@ def get_post_comments(id):
         'prev' : prev_page,
         'total': pagination.total,
         })
+
+@api.route('/posts/',methods=['POST'])
+@permission_required( Permission.ADMINISTER )
+def new_post():
+    post = Post.from_json( request.json )
+    post.author = g.current_user
+    db.session.add( post )
+    db.session.commit()
+    #返回(json数据，状态码，额外的Header信息)
+    return jsonify(post.to_json()),201,{'location':url_for('api.get_post',id=post.id,_external=True)}

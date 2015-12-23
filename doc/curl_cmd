@@ -1,0 +1,4 @@
+curl command for test api:
+
+curl --user songy -H "Content-Type: application/json" \
+-X POST -d '{"title":"create a post by api","body":"i created a post by curl"}' http://localhost/api/v1.0/posts/
