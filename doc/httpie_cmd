@@ -1,0 +1,18 @@
+ http --verbose --json http://www.enjoy01.com/api/v1.0/posts/ Accept:application/json
+ http --verbose --json POST http://www.enjoy01.com/api/v1.0/posts/ Accept:application/json
+ http --verbose --json -a songy POST http://www.enjoy01.com/api/v1.0/posts/ Accept:application/json
+ http --verbose --json -a songy POST http://www.enjoy01.com/api/v1.0/posts/ Accept:application/json title='api create post'
+ http --verbose --json -a songy POST http://www.enjoy01.com/api/v1.0/posts/ Accept:application/json body='api create post'
+ http --verbose --json -a songy POST http://www.enjoy01.com/api/v1.0/posts/ Accept:application/json title='api create post' body='#this post is created by api\n##first time'
+ http --verbose --json -a songy POST http://www.enjoy01.com/api/v1.0/posts/ Accept:application/json title='api create post' body='#this post is created by api\n##first time'
+ http --verbose GET http://www.enjoy01.com/api/v1.0/posts/212
+ http --verbose -a songy GET http://www.enjoy01.com/api/v1.0/posts/212
+ http --verbose -a songy GET http://www.enjoy01.com/api/v1.0/token/
+ curl --basic --user songy http://www.enjoy01.com/api/v1.0/token/
+ curl --user songy -X POST -d '{"body":"body"}' http://www.enjoy01.com/api/v1.0/posts/
+ curl --user songy -X POST -d '{"body":"body","title":""}' http://www.enjoy01.com/api/v1.0/posts/
+ curl --user songy -H "Content-Type: application/json" -X POST -d '{"body":"body"}' http://www.enjoy01.com/api/v1.0/posts/
+ curl --user songy -H "Content-Type: application/json" -X POST -d '{"title":"create a post by api","body":"i created a post by curl"}' http://www.enjoy01.com/api/v1.0/posts/
+ curl --user songy -H "Content-Type: application/json" -X POST -d '{"title":"create a post by api","body":"i created a post by curl"}' http://localhost/api/v1.0/posts/
+ curl --user songy -H "Content-Type: application/json" -X POST -d '{"title":"create a post by api","body":"i created a post by curl"}' http://localhost/api/v1.0/posts/
+ http --verbose --auth songy http://www.enjoy01.com/api/v1.0/token/

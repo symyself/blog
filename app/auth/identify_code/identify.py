@@ -28,7 +28,6 @@ class verify_img(object):
         self.font_size = self._get_font_size()
         self.draw_verify_code()
         self.draw_noisy()
-        
 
 
     def _set_answer(self, answer):
@@ -63,7 +62,7 @@ class verify_img(object):
 
         #
         code_type = random.randrange(0, 3)
-        
+
         #code_type = random.randrange(0, 2)
         if 0 == code_type:
             print 'words:'
@@ -75,7 +74,7 @@ class verify_img(object):
             print 'question:'
             return question()
     def _get_font_size(self):
-        """  将图片高度的80%作为字体大小  这个公式没搞懂?????????????
+        """  将图片高度的80%作为字体大小  这个公式没搞懂
         """
         s1 = int(self.height * 0.8)
         s2 = int(self.width/len(self.verify_code))
@@ -130,4 +129,4 @@ class verify_img(object):
         buf.seek(0)
         #return Response(buf.getvalue(),'image/gif')
         #return send_file(buf.getvalue(), mimetype='image/gif')
-        return send_file(buf, mimetype='image/gif')
+        return send_file(buf, mimetype='image/gif',cache_timeout=0)

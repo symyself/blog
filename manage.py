@@ -1,5 +1,20 @@
 #!/usr/bin/env python
 #! -*- coding: UTF-8 -*-
+import os
+
+'''
+test() 函数收到 --coverage 选项
+的值后再启动覆盖检测已经晚了， 那时全局作用域中的所有代码都已经执行了。为了检测
+的准确性，设定完环境变量 FLASK_COVERAGE 后，脚本会重启。再次运行时，脚本顶端的代
+码发现已经设定了环境变量，于是立即启动覆盖检测。
+'''
+COV = None
+if os.environ.get('FLASK_COVERAGE'):
+    import coverage
+    COV = coverage.coverage(branch=True, include='app/*')
+    COV.start()
+
+
 from app import create_app, db
 from app.models import User,Role,Post,Follow,Comment,Permission
 from flask.ext.script import Manager,Shell
@@ -33,8 +48,14 @@ init 子命令创建迁移仓库:
 manager.add_command('db',MigrateCommand)
 
 
+
+'''
+在 Flask-Script 中，自定义命令很简单。若想为 test 命令添加一个布尔值选项，只需在
+test() 函数中添加一个布尔值参数即可。 Flask-Script 根据参数名确定选项名，并据此向函
+数中传入 True 或 False。
+'''
 @manager.command
-def test():
+def test(coverage=False):
     '''
     Run the unit test
     manager.command 修饰器让自定义命令变得简单。修饰函数名就是命令名，函数的文档字符
@@ -42,11 +63,29 @@ def test():
     单元测试可使用下面的命令运行：
     (venv) $ python manage.py test
     '''
+    if coverage and not os.environ.get('FLASK_COVERAGE'):
+        '''
+        设置环境变量并重启脚本，重启覆盖检测
+        '''
+        import sys
+        os.environ['FLASK_COVERAGE'] = '1'
+        os.execvp(sys.executable, [sys.executable] + sys.argv)
+
     import unittest
     #tests   = unittest.TestLoader.discover( 'tests' )
     #unittest.TextTestRunner.run( tests )
     tests   = unittest.TestLoader().discover( 'tests' )
     unittest.TextTestRunner(verbosity=2).run( tests )
+
+    if COV:
+        COV.stop()
+        COV.save()
+        print 'Coverage Summary:'
+        COV.report()
+        covdir = '/data/blog/app/static/cverage/'
+        COV.html_report(directory=covdir)
+        print 'HTML version: http://www.enjoy01.com/static/cverage/index.html'
+        COV.erase()
 
 
 if __name__ == '__main__':
