@@ -1,3 +1,5 @@
+#!/bin/env python2.7
+#! -*- coding: UTF-8 -*-
 import os
 basedir = os.path.abspath( os.path.dirname( __file__ ))
 
@@ -30,6 +32,8 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'mysql://flask:flask@127.0.0.1/flask_test'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     TABLE_PREFIX='blog_'
+    #禁用csrf,便于测试提交表单
+    WTF_CSRF_ENABLED = False
 
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'mysql://flask:flask@127.0.0.1/flask_pro'
