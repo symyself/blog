@@ -32,6 +32,18 @@ def base():
 def admin():
     return render_template('info.html',info = 'hello admin')
 
+@main.route('/new_article',methods=['GET','POST'])
+@login_required
+@permission_required( Permission.WRITE_ARTICLES )
+def new_article():
+    form = user_forms.new_article_form()
+    if form.validate_on_submit():
+        title = form.title.data
+        content =  form.content.data
+        return render_template('new_article.html',form=form,title=title,content=content)
+    else:
+        return render_template('new_article.html',form=form)
+
 @main.route('/moderate_comment.html')
 @login_required
 @permission_required(Permission.MODERATE_COMMENTS)

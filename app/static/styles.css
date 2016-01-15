@@ -108,3 +108,12 @@ div.flask-pagedown-preview h3 {
 .table.followers tr {
     border-bottom: 1px solid #e0e0e0;
 }
+
+/*
+ * syntaxhighlighter 和 bootstrap 的 css 同时定义了 .container 
+ * 会引起代码高亮行号错位
+ * */
+table>tbody>tr>td>div.container::before {
+    display: inline;
+}
+

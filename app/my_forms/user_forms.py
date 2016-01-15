@@ -142,3 +142,9 @@ class comment_form(Form):
     #body = TextAreaField( u'body',validators=[Required()])
     body = PageDownField( u'评论',validators=[Required()])
     submit = SubmitField(u'确定')
+
+class new_article_form(Form):
+    title = StringField(u'title',validators=[Required(),Length(3,128)])
+    content = TextAreaField( u'content',validators=[Required()])
+    #body = PageDownField( u'body',validators=[Required()])
+    submit = SubmitField(u'确定')

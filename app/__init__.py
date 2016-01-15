@@ -9,11 +9,13 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.mail import Mail
 from flask.ext.login import LoginManager
 from flask.ext.pagedown import PageDown
+from flask_wtf.csrf import CsrfProtect
 from config import config
 
 bootstrap = Bootstrap()
 db = SQLAlchemy()
 mail=Mail()
+csrf = CsrfProtect()
 
 '''
 LoginManager 对象的 session_protection 属性可以设为 None、 'basic' 或 'strong' ，以提
@@ -41,6 +43,7 @@ def create_app(config_name):
     mail.init_app(app)
     login_manager.init_app( app )
     pagedown.init_app( app )
+    csrf.init_app(app)
 
     # 附加路由和自定义的错误页面 (???)
     # 注册蓝本

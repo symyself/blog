@@ -1,4 +1,7 @@
 *.pyc
+*.zip
+*.swp
+*.exe
 tags
 blog_venv
 venv
