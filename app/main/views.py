@@ -10,21 +10,12 @@ from .. import db
 
 @main.route('/', methods=['GET', 'POST'])
 def base():
-    #flash('weclome')
-    form = user_forms.post_form()
-    if current_user.check_permission(Permission.WRITE_ARTICLES)\
-            and form.validate_on_submit():
-        post=Post( title=form.title.data,
-                body=form.body.data,
-                author=current_user._get_current_object())
-        db.session.add( post )
-        return redirect( url_for('.base'))
     #posts = Post.query.order_by( Post.create_time.desc()).all()
     page = request.args.get( 'page',1,type=int)
     pagination = Post.query.order_by( Post.create_time.desc()).paginate(
             page,per_page=10,error_out=False)
     posts=pagination.items
-    return render_template( 'index.html' ,form=form ,posts=posts,pagination=pagination)
+    return render_template( 'index.html' ,posts=posts,pagination=pagination)
 
 @main.route('/admin')
 @login_required
@@ -38,9 +29,12 @@ def admin():
 def new_article():
     form = user_forms.new_article_form()
     if form.validate_on_submit():
-        title = form.title.data
-        content =  form.content.data
-        return render_template('new_article.html',form=form,title=title,content=content)
+        post=Post(title=form.title.data,
+                body=form.content.data,
+                author=current_user._get_current_object())
+        db.session.add( post )
+        db.session.commit()
+        return redirect( url_for("main.get_post",id=post.id))
     else:
         return render_template('new_article.html',form=form)
 
@@ -120,27 +114,25 @@ def get_post(id):
     pagination = post.comments.order_by( Comment.create_time.desc()).paginate(
             page,per_page=5,error_out=False)
     comments = pagination.items
-    return render_template( 'post.html',form=form,posts=[post],
+    return render_template( 'post.html',form=form,post=post,
             comments=comments,pagination=pagination)
 
 
 @main.route("/edit_post_<id>.html",methods=['GET','POST'])
 @login_required
 def edit_post(id):
-    form = user_forms.post_form()
+    form = user_forms.new_article_form()
     post = Post.query.get_or_404(id)
     if current_user != post.author :
         return render_template('info.html',info = 'only author can edit it!!')
     if form.validate_on_submit():
         post.title = form.title.data
-        post.body = form.body.data
+        post.body = form.content.data
         post.last_change_time = datetime.now()
         db.session.add( post )
         db.session.commit()
         return redirect( url_for(".get_post",id=id))
-    form.title.data = post.title
-    form.body.data = post.body
-    return render_template('edit_post.html',form=form)
+    return render_template('edit_post.html',title=post.title,body=post.body)
 
 @main.route("/follow_<username>.html")
 @login_required

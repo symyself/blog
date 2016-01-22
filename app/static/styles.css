@@ -1,4 +1,3 @@
-.profile-thumbnail {
     #position: absolute;
 }
 div.comment-footer {
@@ -16,6 +15,7 @@ ul.posts {
     padding: 0px;
     margin: 16px 0px 0px 0px;
     border-top: 1px solid #e0e0e0;
+    width:60%;
 }
 div.post-tabs ul.posts {
     margin: 0px;
@@ -117,3 +117,9 @@ table>tbody>tr>td>div.container::before {
     display: inline;
 }
 
+/* 代码框变小一点 */
+.syntaxhighlighter {
+    width: 80% !important;
+    /* min-width: 70% !important; */
+    margin-left: 5% !important;
+}

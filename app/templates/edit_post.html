@@ -1,13 +1,37 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
-{% import "_macros.html" as macros %}
+
 
 {% block scripts %}
 {{ super() }}
-{{ pagedown.include_pagedown() }}
+<script src="{{ url_for('static',filename='ueditor1_4_3_1/ueditor.config.js') }}"></script>
+<script src="{{ url_for('static',filename='ueditor1_4_3_1/ueditor.all.js') }}"></script>
+<script src="{{ url_for('static',filename='ueditor1_4_3_1/third-party/SyntaxHighlighter/shCore.js') }}"></script>
+<script type="text/javascript">
+    SyntaxHighlighter.all();
+</script>
+<script type="text/javascript">
+    var ue = UE.getEditor('content');
+</script>
 {% endblock %}
 
-{% block title %}enjoy01 edit post{% endblock %}
+{% block title %}新建文章{% endblock %}
 {% block page_content %}
-            {{ wtf.quick_form(form) }}
+    <div class="container">
+        <form action="" method="post" class="form" role="form">
+            <div>
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+            </div>
+
+            <div class="form-group  required"><label class="control-label" for="title">标题</label>
+                <input class="form-control" id="title" name="title" required type="text" value="{{ title }}">
+            </div>
+            <!-- <textarea class="form-control" id="content" name="content" type="text/plain" required></textarea> -->
+            <textarea id="content" name="content" type="text/plain" required>{{ body }}</textarea>
+
+            <!-- <script type="text/plain" id="content">{{ body|safe }}</script> -->
+
+            <input class="btn btn-default" id="submit" name="submit" type="submit" value="确定">
+        </form>
+    </div>
 {% endblock %}

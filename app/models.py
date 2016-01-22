@@ -52,6 +52,7 @@ class Role( db.Model ):
             db.session.add( role)
         db.session.commit()
 
+
 class Post(db.Model):
     '''博客文章
     '''
@@ -133,7 +134,8 @@ on_changed_body 函数注册在 body 字段上，是 SQLAlchemy“ set”事件�
 把 body 字段中的文本渲染成 HTML 格式，结果保存在 body_html 中，自动且高效地完成
 Markdown 文本到 HTML 的转换。
 '''
-db.event.listen(Post.body,'set',Post.on_changed_body)
+#使用ueditor编辑器直接提交html,不再需要从markdown转换过程
+#db.event.listen(Post.body,'set',Post.on_changed_body)
 
 
 

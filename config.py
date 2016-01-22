@@ -25,17 +25,23 @@ class DevelopmentConfig(Config):
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     SQLALCHEMY_DATABASE_URI = 'mysql://flask:flask@127.0.0.1/flask'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    #使用本地地址，不使用cdn
+    BOOTSTRAP_SERVE_LOCAL = True
     TABLE_PREFIX='blog_'
 
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'mysql://flask:flask@127.0.0.1/flask_test'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    #使用本地地址，不使用cdn
+    BOOTSTRAP_SERVE_LOCAL = True
     TABLE_PREFIX='blog_'
     #禁用csrf,便于测试提交表单
     WTF_CSRF_ENABLED = False
 
 class ProductionConfig(Config):
+    #使用本地地址，不使用cdn
+    BOOTSTRAP_SERVE_LOCAL = True
     SQLALCHEMY_DATABASE_URI = 'mysql://flask:flask@127.0.0.1/flask_pro'
     SQLALCHEMY_TRACK_MODIFICATIONS = True
 
