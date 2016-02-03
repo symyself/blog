@@ -1,3 +1,14 @@
+body {
+    /* background: #677F9B; */
+    /* background-image: url('http://images.missyuan.com/attachments/day_080116/20080116_4fffb1a737b5cca959dcN24erUUZft3Y.jp'); */
+    background-image: url('http://www.enjoy01.com/backgroundimage.jpg');
+    background-repeat : no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    margin: 0px;
+    padding: 0px;
+}
+.profile-thumbnail {
     #position: absolute;
 }
 div.comment-footer {

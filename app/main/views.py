@@ -1,5 +1,6 @@
 # coding: utf-8
-from flask import render_template,flash,abort,redirect,url_for,request,abort
+from flask import render_template,flash,abort,redirect,url_for,request,abort,make_response
+from flask import current_app
 from flask.ext.login import current_user,login_required
 from . import main
 from ..models import Permission,User,Post,Comment
@@ -7,6 +8,7 @@ from ..decorators import admin_required,permission_required
 from ..my_forms import user_forms
 from datetime import datetime
 from .. import db
+import os
 
 @main.route('/', methods=['GET', 'POST'])
 def base():
@@ -215,3 +217,14 @@ def delete_comment(id):
     db.session.commit()
     page = request.args.get( 'page',1,type=int)
     return redirect( url_for(".moderate_comment",page=page))
+
+@main.route('/backgroundimage.jpg')
+def get_random_bg_image():
+    #print os.path.abspath(os.path.dirname(__file__))
+    #static_dir = os.path.join(os.path.abspath(__file__), 'static')
+    from random import choice
+    static_dir = current_app.static_folder
+    bg_image_dir= 'background_images'
+    random_img_file= choice( os.listdir(static_dir+'/'+bg_image_dir) )
+    print bg_image_dir+'/'+random_img_file
+    return current_app.send_static_file( bg_image_dir+'/'+random_img_file)
